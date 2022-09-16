@@ -10,7 +10,8 @@
 
 #include <iostream>
 
-
+// Práctica 0
+#include "Particle.h"
 
 using namespace physx;
 
@@ -29,6 +30,8 @@ PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
 ContactReportCallback gContactReportCallback;
 
+
+Particle* particle;
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -53,7 +56,9 @@ void initPhysics(bool interactive)
 	sceneDesc.filterShader = contactReportFilterShader;
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
-	}
+
+	particle = new Particle(PxVec3(0.0f, 0.0f, 0.0f), PxVec3(-1.0f, 3.0f, 0.0f));
+}
 
 
 // Function to configure what happens in each step of physics
@@ -65,6 +70,8 @@ void stepPhysics(bool interactive, double t)
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
+
+	particle->integrate(t);
 }
 
 // Function to clean data
@@ -83,7 +90,10 @@ void cleanupPhysics(bool interactive)
 	transport->release();
 	
 	gFoundation->release();
-	}
+
+	delete particle;
+
+}
 
 // Function called when a key is pressed
 void keyPress(unsigned char key, const PxTransform& camera)

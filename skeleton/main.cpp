@@ -12,6 +12,7 @@
 
 // Práctica 0
 #include "Particle.h"
+#include "Proyectile.h"
 
 using namespace physx;
 
@@ -32,6 +33,7 @@ ContactReportCallback gContactReportCallback;
 
 
 Particle* particle;
+std::vector<Particle*> particles;
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -57,7 +59,8 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	particle = new Particle(PxVec3(0.0f, 20.0f, 0.0f), PxVec3(-1.0f, 3.0f, 0.0f), PxVec3(0.0, -9.8, 0.0), 1);
+	auto diana = new Particle(TargetT, 3.0f, {0.0, 30.0, 0.0});
+	auto suelo = new Particle(FloorT);
 }
 
 
@@ -71,7 +74,9 @@ void stepPhysics(bool interactive, double t)
 	gScene->simulate(t);
 	gScene->fetchResults(true);
 
-	particle->integrate(t);
+	for (int i = 0; i < particles.size(); ++i) {
+		particles[i]->integrate(t);
+	}
 }
 
 // Function to clean data
@@ -92,6 +97,8 @@ void cleanupPhysics(bool interactive)
 	gFoundation->release();
 
 	delete particle;
+	for (auto a : particles)
+		delete a;
 
 }
 
@@ -102,12 +109,19 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 	switch(toupper(key))
 	{
-	//case 'B': break;
-	//case ' ':	break;
 	case ' ':
 	{
 		break;
 	}
+	case 'B':
+	{
+		particles.push_back(new Proyectile(ProyectileTypes::Bubble));
+		break;
+	}
+	case 'N':
+		particles.push_back(new Proyectile(ProyectileTypes::Bullet));
+		break;
+
 	default:
 		break;
 	}

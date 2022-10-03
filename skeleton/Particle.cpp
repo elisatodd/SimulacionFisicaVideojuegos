@@ -13,14 +13,13 @@ Particle::Particle(ParticleTypes t, float r, Vector3 p, Vector3 v, Vector3 a, fl
 
 	case (TargetT):
 	
-		//Vector4 red = {1.0, 0.0, 0.0, 1.0};
-		//renderItem = new RenderItem(CreateShape(physx::P), &pose, red);
+		renderItem = new RenderItem(CreateShape(physx::PxBoxGeometry(r, r, 0.5)), &pose, { 1.0, 0.0, 0.0, 1.0 });
+
 		break;
 
 	case (FloorT):
-		//Vector4 blue = { 0.0, 0.0, 1.0, 1.0 };
 
-		renderItem = new RenderItem(CreateShape(physx::PxPlaneGeometry()), &pose, { 0.0, 0.0, 1.0, 1.0 });
+		renderItem = new RenderItem(CreateShape(physx::PxBoxGeometry(r, 1.0, r)), &pose, { 1.0, 1.0, 1.0, 1.0 });
 
 		break;
 
@@ -29,7 +28,8 @@ Particle::Particle(ParticleTypes t, float r, Vector3 p, Vector3 v, Vector3 a, fl
 
 Particle::~Particle()
 {
-	delete renderItem;
+	DeregisterRenderItem(renderItem);
+
 }
 
 void Particle::integrate(double t)

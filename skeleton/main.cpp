@@ -3,6 +3,7 @@
 #include <PxPhysicsAPI.h>
 
 #include <vector>
+#include <list>
 
 #include "core.hpp"
 #include "RenderUtils.hpp"
@@ -33,7 +34,7 @@ ContactReportCallback gContactReportCallback;
 
 
 Particle* particle;
-std::vector<Particle*> particles;
+std::list<Particle*> particles;
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -59,8 +60,8 @@ void initPhysics(bool interactive)
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 
-	auto diana = new Particle(TargetT, 3.0f, {0.0, 30.0, 0.0});
-	auto suelo = new Particle(FloorT);
+	auto diana = new Particle(TargetT, 3.0f, {0.0, 50.0, 0.0});
+	auto suelo = new Particle(FloorT, 500.0, { -100.0, -5.0, -100.0 });
 }
 
 
@@ -74,8 +75,30 @@ void stepPhysics(bool interactive, double t)
 	gScene->simulate(t);
 	gScene->fetchResults(true);
 
-	for (int i = 0; i < particles.size(); ++i) {
+	/*for (int i = 0; i < particles.size(); ++i) {
 		particles[i]->integrate(t);
+
+		if (particles[i]->getPose().p.x >= 250.0 || particles[i]->getPose().p.y >= 100.0) {
+			delete particles[i];
+		}
+	}*/
+
+	for (auto p : particles){
+		p->integrate(t);
+
+		if (p->getPose().p.x >= 250.0 || p->getPose().p.y >= 100.0) {
+			p->setAlive(false);
+		}
+	}
+
+	auto p = particles.begin();
+	while (p != particles.end()) {
+		if (!(*p)->isAlive()) {
+			delete *p;
+			p = particles.erase(p);
+		}
+		else
+			p++;
 	}
 }
 

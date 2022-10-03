@@ -27,6 +27,11 @@ public:
 	void setAcc(Vector3 a) { acceleration = a; };
 	void setDamping(float d) { damping = d; };
 
+	inline physx::PxTransform getPose() { return pose; }
+
+	inline bool isAlive() { return alive; }
+	inline void setAlive(bool a) { alive = a; }
+
 protected:
 
 	ParticleTypes myPType;
@@ -39,5 +44,6 @@ protected:
 	Vector3 acceleration;
 	float damping; // must be a value between 0 and 1: 0 = max. friction 1 = min. friction
 
+	bool alive = true;
 };
 

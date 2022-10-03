@@ -12,7 +12,7 @@ public:
 	Proyectile(ProyectileTypes t) : Particle(ParticleTypes::ProyectileT) {
 	
 		myType = t;
-		Vector3 newPos, newVel, newAcc;
+		Vector3 newPos, newVel;
 
 		switch (myType) {
 		case Bubble:
@@ -32,7 +32,7 @@ public:
 
 		case Bullet:
 
-			renderItem = new RenderItem(CreateShape(physx::PxCapsuleGeometry(bullet_radius, bullet_height)), &pose, bullet_color);
+			renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(bullet_radius)), &pose, bullet_color);
 
 			newPos = GetCamera()->getEye();
 			setPosition(newPos);
@@ -40,8 +40,7 @@ public:
 			newVel = GetCamera()->getDir() * bullet_velMagnitude;
 			setVel(newVel);
 
-			newAcc = bullet_acceleration;
-			setAcc(newAcc);
+			setAcc(bullet_acceleration);
 			setDamping(bullet_damping);
 
 			break;
@@ -61,10 +60,9 @@ private:
 
 	Vector4 bullet_color = Vector4(1.0, 0.6, 0.2, 1.0); // NARANJA-DORADO
 	float bullet_radius = 0.2f;
-	float bullet_height = 0.3f;
-	float bullet_velMagnitude = 10.0;
+	float bullet_velMagnitude = 30.0;
 	float bullet_damping = 1.0;
-	Vector3 bullet_acceleration = Vector3(10.0, 0.0, 0.0);
+	Vector3 bullet_acceleration = Vector3(0.0, 0.0, 0.0);
 
 	ProyectileTypes myType;
 };

@@ -40,6 +40,7 @@ public:
 			newVel = GetCamera()->getDir() * bullet_velMagnitude;
 			setVel(newVel);
 
+
 			setAcc(bullet_acceleration);
 			setDamping(bullet_damping);
 
@@ -60,9 +61,9 @@ private:
 
 	Vector4 bullet_color = Vector4(1.0, 0.6, 0.2, 1.0); // NARANJA-DORADO
 	float bullet_radius = 0.2f;
-	float bullet_velMagnitude = 30.0;
+	float bullet_velMagnitude = 50.0;
 	float bullet_damping = 1.0;
-	Vector3 bullet_acceleration = Vector3(0.0, 0.0, 0.0);
+	Vector3 bullet_acceleration = Vector3(0.0, -0.5, 0.0);
 
 	ProyectileTypes myType;
 };

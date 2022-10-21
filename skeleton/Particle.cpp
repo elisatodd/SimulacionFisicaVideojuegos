@@ -1,4 +1,5 @@
 #include "Particle.h"
+#include "Proyectile.h"
 
 Particle::Particle(ParticleTypes t, float r, Vector3 p, Vector3 v, Vector3 a, float d) : 
 	myPType(t), pose(p), vel(v), radius(r), damping(d), acceleration(a)
@@ -29,12 +30,25 @@ Particle::Particle(ParticleTypes t, float r, Vector3 p, Vector3 v, Vector3 a, fl
 Particle::~Particle()
 {
 	DeregisterRenderItem(renderItem);
+	delete renderItem;
 
 }
 
-void Particle::integrate(double t)
+bool Particle::integrate(double t)
 {
 	vel = (vel * pow(damping, t)) + (acceleration*t);
 	pose.p = pose.p + vel * t;
 
+	if (remainingTime > 0) remainingTime -= t;
+
+	if (getTime() <= 0 || getPose().p.y <= 0 || getPose().p.y >= 200.0) alive = false;
+
+	return alive;
+}
+
+Particle* Particle::clone() const
+{
+	auto a = new Particle(myPType, radius, pose.p, vel, acceleration, damping);
+	return a;
+	
 }

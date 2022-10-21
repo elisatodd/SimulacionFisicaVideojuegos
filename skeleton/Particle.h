@@ -20,17 +20,24 @@ public:
 
 	~Particle();
 
-	void integrate(double t);
+	bool integrate(double t);
 
 	void setPosition(Vector3 p) { pose.p = p; };
 	void setVel(Vector3 v) { vel = v; };
 	void setAcc(Vector3 a) { acceleration = a; };
 	void setDamping(float d) { damping = d; };
+	void setRemainingTime(double t) { remainingTime = t; };
 
 	inline physx::PxTransform getPose() { return pose; }
+	inline Vector3 getVel() { return vel; }
+	inline double getTime() { return remainingTime; };
 
 	inline bool isAlive() { return alive; }
 	inline void setAlive(bool a) { alive = a; }
+
+
+
+	virtual Particle* clone() const;
 
 protected:
 
@@ -45,5 +52,7 @@ protected:
 	float damping; // must be a value between 0 and 1: 0 = max. friction 1 = min. friction
 
 	bool alive = true;
+
+	double remainingTime;
 };
 

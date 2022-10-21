@@ -3,7 +3,8 @@
 
 enum ProyectileTypes {
 	Bubble,
-	Bullet
+	Bullet,
+	Ball
 };
 
 class Proyectile : public Particle {
@@ -45,11 +46,24 @@ public:
 			setDamping(bullet_damping);
 
 			break;
+
+		case Ball:
+
+			renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(ball_radius)), &pose, ball_color);
+
+			//setVel({0.0, 10.0, 0.0});
+
+			setAcc(ball_acceleration);
+			setDamping(ball_damping);
+
+			break;
 		}
 
 	}; 
 
 	~Proyectile() {};
+
+	Particle* clone() const override;
 
 private:
 
@@ -64,6 +78,14 @@ private:
 	float bullet_velMagnitude = 50.0;
 	float bullet_damping = 1.0;
 	Vector3 bullet_acceleration = Vector3(0.0, -0.5, 0.0);
+
+
+	Vector4 ball_color = Vector4(1.0, 0.5, 0.5, 1.0);
+	float ball_velMagnitud = 0.0f;
+	float ball_damping = 1.0;
+	float ball_radius = 0.8f;
+	Vector3 ball_acceleration = Vector3(0.0, -10.0, 0.0);
+
 
 	ProyectileTypes myType;
 };

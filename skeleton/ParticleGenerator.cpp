@@ -10,6 +10,7 @@ ParticleGenerator::~ParticleGenerator()
 	delete _model;
 }
 
-void ParticleGenerator::setParticle(Particle* model)
+void ParticleGenerator::setParticle(Particle* m)
 {
+	_model = m;
 }

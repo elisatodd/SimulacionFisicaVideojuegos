@@ -17,7 +17,7 @@ list<Particle*> GaussianParticleGenerator::generateParticles() {
     std::normal_distribution<> std_dis_velY(_mean_vel.y, _std_dev_vel.y);
     std::normal_distribution<> std_dis_velZ(_mean_vel.z, _std_dev_vel.z);
     // TIEMPO
-    std::uniform_real_distribution<> std_dis_time(2.0, std_dev_t); // crear variable de media para el tiempo
+    std::uniform_real_distribution<> std_dis_time(0.1, std_dev_t); // crear variable de media para el tiempo
 
     for (size_t i = 0; i < _num_particles; ++i) {
         // auto rnd = (double(rand()))/(double(RAND_MAX)+1); // value between 0 and 1

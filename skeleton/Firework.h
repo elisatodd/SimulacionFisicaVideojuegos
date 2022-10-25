@@ -10,7 +10,9 @@ class Firework : public Particle
 {
 public:
 
-	Firework(int gens);
+	Firework(Vector3 pos, Vector3 dir, Vector3 acc, double dam, list<shared_ptr<ParticleGenerator>> lG, float radius);
+	
+
 	~Firework();
 
 	//int integrate(double t);
@@ -19,9 +21,6 @@ public:
 
 	list<Particle*> explode();
 private:
-
-	int _generationsLeft; // explosiones que quedan
-	int _nFireworks;// particulas generadas en cada explosion
 
 	list<shared_ptr<ParticleGenerator>> _gens;
 

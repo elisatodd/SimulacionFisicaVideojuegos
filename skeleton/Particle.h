@@ -6,7 +6,8 @@
 enum ParticleTypes {
 	ProyectileT,
 	TargetT,
-	FloorT
+	FloorT,
+	FireworkT
 };
 
 class Particle
@@ -27,6 +28,7 @@ public:
 	void setAcc(Vector3 a) { acceleration = a; };
 	void setDamping(float d) { damping = d; };
 	void setRemainingTime(double t) { remainingTime = t; };
+	void setColor(Vector4 c) { renderItem->color = c; };
 
 	inline physx::PxTransform getPose() { return pose; }
 	inline Vector3 getVel() { return vel; }

@@ -1,7 +1,9 @@
 #include "Firework.h"
 
-Firework::Firework(int gens) : _generationsLeft(gens), _nFireworks(3)
+Firework::Firework(Vector3 pos, Vector3 dir, Vector3 acc, double dam, list<shared_ptr<ParticleGenerator>> lG, float radius) : 
+                                            Particle(ParticleTypes::FireworkT, radius, pos, dir, acc, dam), _gens(lG)
 {
+
 }
 
 Firework::~Firework()
@@ -16,21 +18,24 @@ Firework::~Firework()
 
 Particle* Firework::clone() const
 {
-    Firework* f = new Firework(_generationsLeft - 1);
+    Firework* f = new Firework(pose.p, vel, acceleration, damping, _gens, radius);
+    f->setColor(renderItem->color);
+    f->setRemainingTime(remainingTime);
+
     return f;
 }
 
 list<Particle*> Firework::explode()
 {
     list<Particle*> parts;
-    // No es el que ya no explota
-    if (_generationsLeft > 0){
 
-        for (auto g : _gens) {
-            auto p = g->generateParticles();
-            for (auto a : p)
-                parts.push_back(a);
-        }
+    for (auto g : _gens) { // Para cada nueva generación fruto de la explosión
+        g->setMeanPos(pose.p);
+        g->setMeanVel(vel);
+
+        auto p = g->generateParticles();
+        for (auto a : p)
+            parts.push_back(a);
     }
 
     return parts;

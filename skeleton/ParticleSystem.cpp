@@ -6,6 +6,7 @@
 
 ParticleSystem::ParticleSystem() : _particles(0)
 {
+
 }
 
 ParticleSystem::~ParticleSystem()
@@ -18,7 +19,7 @@ ParticleSystem::~ParticleSystem()
 
     auto a = _particle_generators.begin();
     while (a != _particle_generators.end()) {
-        delete* a;
+    //    delete* a;
         a = _particle_generators.erase(a);
     }
 }
@@ -48,7 +49,8 @@ void ParticleSystem::addParticleGenerator(string name, ProyectileTypes pT, Gener
 
     case uniform:
     {
-        ParticleGenerator* upg = new UniformParticleGenerator(name, mediapos, mediavel, genProb, numPart, m, anchovel, anchopos);
+       // ParticleGenerator* upg = new UniformParticleGenerator(name, mediapos, mediavel, genProb, numPart, m, anchovel, anchopos);
+        shared_ptr<ParticleGenerator> upg(new UniformParticleGenerator(name, mediapos, mediavel, genProb, numPart, m, anchovel, anchopos));
         _particle_generators.push_back(upg);
 
         break;
@@ -56,13 +58,18 @@ void ParticleSystem::addParticleGenerator(string name, ProyectileTypes pT, Gener
 
     case normal: {
 
-        ParticleGenerator* gpg = new GaussianParticleGenerator(name, mediapos, mediavel, genProb, numPart, m, anchovel, anchopos, time);
+      //  ParticleGenerator* gpg = new GaussianParticleGenerator(name, mediapos, mediavel, genProb, numPart, m, anchovel, anchopos, time);
+        shared_ptr<ParticleGenerator> gpg(new GaussianParticleGenerator(name, mediapos, mediavel, genProb, numPart, m, anchovel, anchopos, time));
         _particle_generators.push_back(gpg);
-
         break;
     }
 
     }
+}
+
+void ParticleSystem::addParticleGenerator(shared_ptr<ParticleGenerator> gen)
+{
+    _particle_generators.push_back(gen);
 }
 
 
@@ -73,7 +80,7 @@ void ParticleSystem::removeParticleGenerator(string name)
     auto p = _particle_generators.begin();
     while (!found && p != _particle_generators.end()) {
         if ((*p)->getGenName() == name) {
-            delete* p;
+            //delete* p; // cuando no es shared ptr
             p = _particle_generators.erase(p);
             found = true;
         }
@@ -86,18 +93,19 @@ void ParticleSystem::removeAllParticleGenerators()
 {
     auto a = _particle_generators.begin();
     while (a != _particle_generators.end()) {
-        delete* a;
+     //   delete* a;
         a = _particle_generators.erase(a);
     }
 }
 
 void ParticleSystem::update(double t)
 {
-    for (auto p : _particle_generators) {
-        auto l = p->generateParticles();
-        for (auto q : l)
-            _particles.push_back(q);
-    }
+    // PARA LA PARTE 1
+    //for (auto p : _particle_generators) {
+    //    auto l = p->generateParticles();
+    //    for (auto q : l)
+    //        _particles.push_back(q);
+    //}
 
     for (auto p : _particles) {
         // DELETE CONDITION
@@ -125,24 +133,61 @@ ParticleGenerator* ParticleSystem::getParticleGenerator(string name)
 {
     for (auto p : _particle_generators)
         if (p->getGenName() == name)
-            return p;
+            return p.get();
     return nullptr;
 }
 
 void ParticleSystem::generateFireworkSystem()
 {
-    Particle base_p = new Particle({0.0, 0.0, 0.0}, {0.0, 2.0, 0.0}, _gravity, 0.999, 0.5, 0.0, FOG);
+    physx::PxVec3 _gravity = { 0.0,  -10.0, 0.0 };
 
-    std::shared_ptr<ParticleGenerator*> gen1(new GaussianParticleGenerator({0, 0, 0}, {0.3, 0.2, 0.2}, 0.2, 14));
-    gen1->setParticle(base_p);
-    gen1->setName("Base Particle generator");
-    _firework_pool.push_back();
+    shared_ptr<ParticleGenerator> g0(new GaussianParticleGenerator("FIREWORKS GAUSSIAN GENERATOR initial",
+        { 0.0, 10.0, 0.0 }, { 0.0, 40.0, 0.0 }, 1.0, 1,
+        nullptr, { 3.0, 2.0, 3.0 }, { 0.1, 0.1, 0.1 }, 1.0 ));
+    
+    addParticleGenerator(g0);
 
+    auto pHumo = new Proyectile(ProyectileTypes::Smoke);
+
+    shared_ptr<ParticleGenerator> g1(new GaussianParticleGenerator("FIREWORKS GAUSSIAN GENERATOR", 
+                                                                { 0.0, 10.0, 0.0 }, { 20, 10, 20 }, 1.0, 1,
+                                                                pHumo, { 2.0, 1.0, 2.0 }, {1.0, 1.0, 1.0}, 1.0));
+
+    addParticleGenerator(g1);
+
+    auto fBase = new Firework({ -10000.0, -10000.0, -10000.0 }, { 0.0, 0.0, 0.0 }, _gravity, 0.99, { g1 }, 0.5);
+    fBase->setColor({ 1.0, 1.0, 0.5, 1.0 });
+    _firework_pool.push_back(fBase);
+
+    shared_ptr<ParticleGenerator> g2(new GaussianParticleGenerator("FIREWORKS GAUSSIAN GENERATOR 1", 
+                                                                { 0.0, 20.0, 0.0 }, { 20, 10, 20 }, 1.0, 4,
+                                                                _firework_pool[0], {2.0, 1.0, 2.0}, {1.0, 1.0, 1.0}, 1.0));
+    
+    addParticleGenerator(g2);
+
+    auto p = new Firework({ -10000.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, _gravity, 0.99, { g2, g1 }, 1.0);
+    p->setColor({ 1.0, 1.0, 0.0, 1.0 });
+    _firework_pool.push_back(p);
+
+    shared_ptr<ParticleGenerator> g3(new GaussianParticleGenerator("FIREWORKS GAUSSIAN GENERATOR 2", 
+                                                                { 0.0, 20.0, 0.0 }, { 20, 10, 20 }, 1.0, 6,
+                                                                _firework_pool[1], {2.0,1.0, 2.0}, {1.0, 1.0, 1.0}, 1.0));
+    
+    auto p1 = new Firework({ -10000.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, _gravity, 0.99, { g3 }, 1.5);
+    p1->setColor({ 1.0, 0.5, 0.0, 1.0 });
+    _firework_pool.push_back(p1);
+
+    shared_ptr<ParticleGenerator> g4(new GaussianParticleGenerator("FIREWORKS GAUSSIAN GENERATOR 3", 
+                                                                { 0.0, 30.0, 0.0 }, { 20, 10, 20 }, 1.0, 8,
+                                                                _firework_pool[2], {2.0, 1.0, 2.0}, {1.0, 1.0, 1.0}, 3.0));
+    
+    auto p2 = new Firework({ -10000.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, _gravity, 0.99, { g4, g2 }, 2.0);
+    p2->setColor({1.0, 0.0, 0.0, 1.0});
+    _firework_pool.push_back(p2);
 }
 
 void ParticleSystem::onParticleDeath(Particle* p)
 {
-
    // p->setAlive(false);
 
     // Comprobar si es un firework
@@ -150,10 +195,30 @@ void ParticleSystem::onParticleDeath(Particle* p)
     f = dynamic_cast<Firework*>(p);
 
     if (f != nullptr) {
-        f->explode();
+        for (auto fire : f->explode()) {
+            _particles.push_back(fire);
+        }
     }
 }
 
 void ParticleSystem::shootFirework(int type)
 {
+    generateFireworkSystem();
+    ////auto gen = getParticleGenerator("FireworkShooterGenerator");
+    //if (gen == nullptr || type >= _firework_pool.size())
+    //    return;
+    
+    //MODELO
+    auto model = _firework_pool[type]->clone();
+    auto gen = getParticleGenerator("FIREWORKS GAUSSIAN GENERATOR initial");
+    gen->setParticle(model);
+    //_particle_generators.front()->setParticle(model);
+
+    auto p = gen->generateParticles().front();
+  //  auto p = new Firework({10.0, 10.0, 0.0}, {0.0, 20.0, 0.0}, {0.0, -10.0, 0.0}, _particle_generators, 0.5, 3);
+
+   // p->setRemainingTime(2.0);
+
+    _particles.push_back(p);
+
 }

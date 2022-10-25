@@ -4,7 +4,9 @@
 enum ProyectileTypes {
 	Bubble,
 	Bullet,
-	Ball
+	Ball,
+	Smoke,
+	Firework0
 };
 
 class Proyectile : public Particle {
@@ -57,6 +59,23 @@ public:
 			setDamping(ball_damping);
 
 			break;
+
+		case Smoke:
+
+			renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(smoke_radius)), &pose, smoke_color);
+
+			setAcc(smoke_acceleration);
+			setDamping(smoke_damping);
+
+			break;
+		case Firework0:
+
+			renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(firework_0_radius)), &pose, firework_0_color);
+
+			setAcc(firework_0_acceleration);
+			setDamping(firework_0_damping);
+
+			break;
 		}
 
 	}; 
@@ -86,6 +105,17 @@ private:
 	float ball_radius = 0.8f;
 	Vector3 ball_acceleration = Vector3(0.0, -10.0, 0.0);
 
+	Vector4 smoke_color = Vector4(0.66, 0.66, 0.66, 1.0);
+	float smoke_velMagnitud = 20.0f;
+	float smoke_damping = 0.4f;
+	float smoke_radius = 0.3f;
+	Vector3 smoke_acceleration = Vector3(0.0, 1.0, 0.0);
+
+	Vector4 firework_0_color = Vector4(1.0, 0.0, 0.0, 1.0);
+	float firework_0_velMagnitud = 20.0f;
+	float firework_0_damping = 0.9f;
+	float firework_0_radius = 0.3f;
+	Vector3 firework_0_acceleration = Vector3(0.0, 1.0, 0.0);
 
 	ProyectileTypes myType;
 };

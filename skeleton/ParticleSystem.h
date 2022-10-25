@@ -25,6 +25,8 @@ public:
 	void removeParticleGenerator(string name);
 	void removeAllParticleGenerators();
 
+	void deactivateAllParticleGenerators();
+
 	void update(double t);
 
 	ParticleGenerator* getParticleGenerator(string name); // devuelve el P.Gen correspondiente a name

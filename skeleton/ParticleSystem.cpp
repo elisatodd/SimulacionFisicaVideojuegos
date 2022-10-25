@@ -6,7 +6,25 @@
 
 ParticleSystem::ParticleSystem() : _particles(0)
 {
+    addParticleGenerator("Bubble_Cannon", ProyectileTypes::Bubble, GeneratorTypes::normal,
+        GetCamera()->getDir() * 10, GetCamera()->getEye() + GetCamera()->getDir() * 3,
+        { 1.0, 1.0, 1.0 }, { 1.0, 1.0, 1.0 }, 0.5, 1, 5.0);
 
+    addParticleGenerator("Ball_Fountain", ProyectileTypes::Ball, GeneratorTypes::uniform,
+        { 0.0, 20.0, 0.0 }, { 20, 10, 20 }, { 6.0, 3.0, 6.0 }, { 1.0, 1.0, 1.0 }, 0.5, 5, 10.0);
+
+    addParticleGenerator("?", ProyectileTypes::Bullet, GeneratorTypes::normal,
+        	{ 0.0, 50.0, 0.0 }, { 20, 10, 20 }, { 4.0, 3.0, 4.0 }, { 1.0, 1.0, 1.0 }, 0.5, 10, 5.0);
+
+    addParticleGenerator("Beehive", ProyectileTypes::Bullet, GeneratorTypes::normal,
+        { 0.0, 50.0, 0.0 }, { 20, 10, 20 }, { 4.0, 3.0, 4.0 }, { 1.0, 1.0, 1.0 }, 0.5, 10, 5.0);
+
+    addParticleGenerator("Beehive2", ProyectileTypes::Bullet, GeneratorTypes::normal,
+        GetCamera()->getDir() * 50, GetCamera()->getEye() + GetCamera()->getDir(),
+        { 1.0, 1.0, 1.0 }, { 0.5, 0.5, 0.5 }, 0.5, 10, 5.0);
+
+    addParticleGenerator("Bullet_Rain", ProyectileTypes::Bullet, GeneratorTypes::normal,
+        	{ 0.0, 50.0, 0.0 }, { 20, 10, 20 }, { 4.0, 3.0, 4.0 }, { 1.0, 1.0, 1.0 }, 0.5, 10, 5.0);
 }
 
 ParticleSystem::~ParticleSystem()
@@ -98,14 +116,23 @@ void ParticleSystem::removeAllParticleGenerators()
     }
 }
 
+void ParticleSystem::deactivateAllParticleGenerators()
+{
+    for (auto p : _particle_generators) {
+        p->setActive(false);
+    }
+}
+
 void ParticleSystem::update(double t)
 {
-    // PARA LA PARTE 1
-    //for (auto p : _particle_generators) {
-    //    auto l = p->generateParticles();
-    //    for (auto q : l)
-    //        _particles.push_back(q);
-    //}
+    for (auto p : _particle_generators) {
+        if (p->getActive()) {
+            auto l = p->generateParticles();
+            for (auto q : l) {
+                _particles.push_back(q);
+            }
+        }
+    }
 
     for (auto p : _particles) {
         // DELETE CONDITION
@@ -204,21 +231,12 @@ void ParticleSystem::onParticleDeath(Particle* p)
 void ParticleSystem::shootFirework(int type)
 {
     generateFireworkSystem();
-    ////auto gen = getParticleGenerator("FireworkShooterGenerator");
-    //if (gen == nullptr || type >= _firework_pool.size())
-    //    return;
-    
-    //MODELO
+
     auto model = _firework_pool[type]->clone();
     auto gen = getParticleGenerator("FIREWORKS GAUSSIAN GENERATOR initial");
     gen->setParticle(model);
-    //_particle_generators.front()->setParticle(model);
 
     auto p = gen->generateParticles().front();
-  //  auto p = new Firework({10.0, 10.0, 0.0}, {0.0, 20.0, 0.0}, {0.0, -10.0, 0.0}, _particle_generators, 0.5, 3);
-
-   // p->setRemainingTime(2.0);
 
     _particles.push_back(p);
-
 }

@@ -39,6 +39,7 @@ std::list<Particle*> particles;
 
 ParticleSystem* pSys;
 bool fromCamera = false;
+string cameraGen;
 
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -109,10 +110,7 @@ void stepPhysics(bool interactive, double t)
 	}
 
 	if (fromCamera) {
-		ParticleGenerator* g = pSys->getParticleGenerator("GAUSSIAN");
-		
-		if (g == nullptr)
-			g = pSys->getParticleGenerator("UNIFORM");
+		ParticleGenerator* g = pSys->getParticleGenerator(cameraGen);
 		
 		g->setMeanPos(GetCamera()->getEye() + GetCamera()->getDir() * 10);
 		g->setMeanVel(GetCamera()->getDir()*10);
@@ -161,47 +159,52 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	}
 	case 'B': // Bubble Cannon
 	{
-		fromCamera = true;
+			// Disparar 1 burbuja
 		// particles.push_back(new Proyectile(ProyectileTypes::Bubble));
-		pSys->removeAllParticleGenerators();
-		pSys->addParticleGenerator("GAUSSIAN", ProyectileTypes::Bubble, GeneratorTypes::normal,
-			GetCamera()->getDir() * 10, GetCamera()->getEye() + GetCamera()->getDir() * 3,
-			{1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}, 0.5, 1, 5.0);
+
+			// Primera versión Generador de Partículas
+		//fromCamera = true;
+		//pSys->removeAllParticleGenerators();
+		//pSys->addParticleGenerator("GAUSSIAN", ProyectileTypes::Bubble, GeneratorTypes::normal,
+		//	GetCamera()->getDir() * 10, GetCamera()->getEye() + GetCamera()->getDir() * 3,
+		//	{1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}, 0.5, 1, 5.0);
+
+		fromCamera = true;
+		cameraGen = "Bubble_Cannon";
+
+		auto p = pSys->getParticleGenerator("Bubble_Cannon");
+		p->setActive(!p->getActive());
 		break;
 	}
-	case 'N':
+	case 'N': // disparar una bala
 		particles.push_back(new Proyectile(ProyectileTypes::Bullet));
 		break;
 
 	case 'U': { // Fuente de pelotas
 
 		fromCamera = false;
-		pSys->removeAllParticleGenerators();
-		pSys->addParticleGenerator("UNIFORM", ProyectileTypes::Ball, GeneratorTypes::uniform,
-			{ 0.0, 20.0, 0.0 }, { 20, 10, 20 }, { 6.0, 3.0, 6.0 }, { 1.0, 1.0, 1.0 }, 0.5, 5, 10.0);
+		auto p = pSys->getParticleGenerator("Ball_Fountain");
+		p->setActive(!p->getActive());
+
 		break;
 	}
-	case 'A': { // Avispero
+	case 'T': { // Avispero
 
 		fromCamera = true;
-		pSys->removeAllParticleGenerators();
-		pSys->addParticleGenerator("GAUSSIAN", ProyectileTypes::Bullet, GeneratorTypes::normal,
-			{ 0.0, 50.0, 0.0 }, { 20, 10, 20 }, { 4.0, 3.0, 4.0 }, { 1.0, 1.0, 1.0 }, 0.5, 10, 5.0);
+		cameraGen = "Beehive";
+
+		auto p = pSys->getParticleGenerator("Beehive");
+		p->setActive(!p->getActive());
+
 		break;
 
 	}
 	case 'R': { // Luvia de balas
-		// EH
-		/*	fromCamera = false;
-		pSys->removeAllParticleGenerators();
-		pSys->addParticleGenerator("UNIFORM", ProyectileTypes::Bullet, GeneratorTypes::normal,
-			GetCamera()->getDir() * 50, GetCamera()->getEye() + GetCamera()->getDir(),
-			{ 1.0, 1.0, 1.0 }, { 0.5, 0.5, 0.5 }, 0.5, 10, 5.0);*/
+	
+		fromCamera = false;
+		auto p = pSys->getParticleGenerator("Bullet_Rain");
+		p->setActive(!p->getActive());
 
-		fromCamera = true;
-		pSys->removeAllParticleGenerators();
-		pSys->addParticleGenerator("GAUSSIAN", ProyectileTypes::Bullet, GeneratorTypes::normal,
-			{ 0.0, 50.0, 0.0 }, { 20, 10, 20 }, { 4.0, 3.0, 4.0 }, { 1.0, 1.0, 1.0 }, 0.5, 10, 5.0);
 		break;
 	}
 	default:

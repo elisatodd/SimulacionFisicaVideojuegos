@@ -30,11 +30,16 @@ public:
 
 	inline void setMeanVel(Vector3 v) { _mean_vel = v; };
 
+	inline void setActive(bool a) { _active = a; };
+	inline bool getActive() { return _active; };
+
 protected:
 	string _name;
 	Vector3 _mean_pos, _mean_vel;
 	double _generation_probability;
 	int _num_particles;
 	Particle* _model;
+
+	bool _active; // indica si está activo en la escena -> generando partículas constantemente
 };
 

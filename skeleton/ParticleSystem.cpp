@@ -142,7 +142,7 @@ void ParticleSystem::generateFireworkSystem()
     physx::PxVec3 _gravity = { 0.0,  -10.0, 0.0 };
 
     shared_ptr<ParticleGenerator> g0(new GaussianParticleGenerator("FIREWORKS GAUSSIAN GENERATOR initial",
-        { 0.0, 10.0, 0.0 }, { 0.0, 40.0, 0.0 }, 1.0, 1,
+        { -20, 0, -20 }, { 0.0, 60.0, 0.0 }, 1.0, 1,
         nullptr, { 3.0, 2.0, 3.0 }, { 0.1, 0.1, 0.1 }, 1.0 ));
     
     addParticleGenerator(g0);
@@ -151,7 +151,7 @@ void ParticleSystem::generateFireworkSystem()
 
     shared_ptr<ParticleGenerator> g1(new GaussianParticleGenerator("FIREWORKS GAUSSIAN GENERATOR", 
                                                                 { 0.0, 10.0, 0.0 }, { 20, 10, 20 }, 1.0, 1,
-                                                                pHumo, { 2.0, 1.0, 2.0 }, {1.0, 1.0, 1.0}, 1.0));
+                                                                pHumo, { 2.0, 1.0, 2.0 }, {1.0, 1.0, 1.0}, 0.5));
 
     addParticleGenerator(g1);
 
@@ -161,7 +161,7 @@ void ParticleSystem::generateFireworkSystem()
 
     shared_ptr<ParticleGenerator> g2(new GaussianParticleGenerator("FIREWORKS GAUSSIAN GENERATOR 1", 
                                                                 { 0.0, 20.0, 0.0 }, { 20, 10, 20 }, 1.0, 4,
-                                                                _firework_pool[0], {2.0, 1.0, 2.0}, {1.0, 1.0, 1.0}, 1.0));
+                                                                _firework_pool[0], {2.0, 1.0, 2.0}, {1.0, 1.0, 1.0}, 0.5));
     
     addParticleGenerator(g2);
 
@@ -171,7 +171,7 @@ void ParticleSystem::generateFireworkSystem()
 
     shared_ptr<ParticleGenerator> g3(new GaussianParticleGenerator("FIREWORKS GAUSSIAN GENERATOR 2", 
                                                                 { 0.0, 20.0, 0.0 }, { 20, 10, 20 }, 1.0, 6,
-                                                                _firework_pool[1], {2.0,1.0, 2.0}, {1.0, 1.0, 1.0}, 1.0));
+                                                                _firework_pool[1], {2.0,1.0, 2.0}, {1.0, 1.0, 1.0}, 1.5));
     
     auto p1 = new Firework({ -10000.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, _gravity, 0.99, { g3 }, 1.5);
     p1->setColor({ 1.0, 0.5, 0.0, 1.0 });

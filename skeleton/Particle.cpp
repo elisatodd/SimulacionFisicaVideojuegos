@@ -46,7 +46,7 @@ bool Particle::integrate(double t)
 
 	if (remainingTime > 0) remainingTime -= t;
 
-	if (getTime() <= 0 || getPose().p.y <= 0 || getPose().p.y >= 200.0) alive = false;
+	if (getTime() <= 0 || getPose().p.y <= -100.0 || getPose().p.y >= 1000.0) alive = false;
 
 	return alive;
 }

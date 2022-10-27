@@ -1,6 +1,7 @@
 #include "ParticleSystem.h"
 #include "UniformParticleGenerator.h"
 #include "GaussianParticleGenerator.h"
+#include "ShapeGenerator.h"
 #include "Proyectile.h"
 #include "Firework.h"
 
@@ -25,6 +26,9 @@ ParticleSystem::ParticleSystem() : _particles(0)
 
     addParticleGenerator("Bullet_Rain", ProyectileTypes::Bullet, GeneratorTypes::normal,
         	{ 0.0, 50.0, 0.0 }, { 20, 10, 20 }, { 4.0, 3.0, 4.0 }, { 1.0, 1.0, 1.0 }, 0.5, 10, 5.0);
+
+    addParticleGenerator("ShapeTest", ProyectileTypes::Firework0, GeneratorTypes::shape,
+        { 0.0, 50.0, 0.0 }, { 20, 10, 20 }, { 4.0, 3.0, 4.0 }, { 1.0, 1.0, 1.0 }, 1.0, 10, 5.0);
 }
 
 ParticleSystem::~ParticleSystem()
@@ -53,15 +57,18 @@ void ParticleSystem::addParticleGenerator(string name, ProyectileTypes pT, Gener
 
     case Bubble:
         m = new Proyectile(ProyectileTypes::Bubble);
-
         break;
 
     case Bullet:
         m = new Proyectile(ProyectileTypes::Bullet);
+        
+        break;
 
+    case Firework0:
+        m = new Proyectile(ProyectileTypes::Firework0);
         break;
     }
-    m->setPosition({-100000.0,  -100000.0 , -100000.0 });
+    m->setPosition({ -100000.0,  -100000.0 , -100000.0 });
 
     switch (gT) {
 
@@ -82,12 +89,23 @@ void ParticleSystem::addParticleGenerator(string name, ProyectileTypes pT, Gener
         break;
     }
 
+    case shape: {
+        shared_ptr<ParticleGenerator> spg(new ShapeGenerator(name, mediapos, mediavel, genProb, numPart, m, anchovel, anchopos, time));
+        _particle_generators.push_back(spg);
+        break;
+    }
+
     }
 }
 
 void ParticleSystem::addParticleGenerator(shared_ptr<ParticleGenerator> gen)
 {
     _particle_generators.push_back(gen);
+}
+
+void ParticleSystem::addParticle(Particle* p)
+{
+    _particles.push_back(p);
 }
 
 

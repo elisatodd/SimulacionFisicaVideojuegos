@@ -207,6 +207,16 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 		break;
 	}
+	case 'C' : { // distribución con forma
+		fromCamera = false;
+		auto p = pSys->getParticleGenerator("ShapeTest");
+		auto l = p->generateParticles();
+		//p->setActive(!p->getActive());
+
+		for (auto part : l) {
+			pSys->addParticle(part);
+		}
+	}
 	default:
 		break;
 	}

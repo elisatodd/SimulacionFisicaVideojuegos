@@ -21,6 +21,7 @@ public:
 		double genProb, int numPart, double time);
 
 	void addParticleGenerator(shared_ptr<ParticleGenerator> pG);
+	void addParticle(Particle* p);
 
 	void removeParticleGenerator(string name);
 	void removeAllParticleGenerators();

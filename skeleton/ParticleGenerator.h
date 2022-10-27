@@ -10,7 +10,8 @@ using namespace std;
 enum GeneratorTypes {
 	uniform,
 	normal,
-	firework
+	firework,
+	shape
 };
 
 class ParticleGenerator

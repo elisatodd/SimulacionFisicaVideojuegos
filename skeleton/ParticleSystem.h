@@ -3,6 +3,7 @@
 #include <list>
 #include "Proyectile.h"
 #include "ParticleGenerator.h"
+#include "ParticleForceRegistry.h"
 
 class Firework;
 
@@ -37,11 +38,18 @@ public:
 	void onParticleDeath(Particle* p);
 	void shootFirework(int type);
 
+	// FUERZAS
+	void addBubbles();
+	void addDifferentABF();
+
 private:
 	std::list<Particle*> _particles;
 	//std::list<ParticleGenerator*> _particle_generators;
 	std::list<shared_ptr<ParticleGenerator>> _particle_generators;
 
 	std::vector<Firework*> _firework_pool;
+
+	ParticleForceRegistry* pfr;
+
 };
 

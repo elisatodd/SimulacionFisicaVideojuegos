@@ -37,9 +37,20 @@ public:
 	inline bool isAlive() { return alive; }
 	inline void setAlive(bool a) { alive = a; }
 
-
-
 	virtual Particle* clone() const;
+
+	// FUERZAS
+	void setABF(bool a) { affectedByForces = a; };
+	bool getABF() { return affectedByForces; };
+
+	// Clears accumulated force
+	void clearForce();
+	// Add force to apply in next integration only
+	void addForce(const Vector3& f);
+
+	float getInvMass() { return 1 / mass; }
+	float getMass() { return mass; }
+	void setMass(float m) { mass = m; }
 
 protected:
 
@@ -56,5 +67,13 @@ protected:
 	bool alive = true;
 
 	double remainingTime;
+
+	// FUERZAS
+
+	// Accumulated force
+	bool affectedByForces = false;
+	Vector3 force = {0.0, 0.0, 0.0};
+	float mass = 0.0f;
+
 };
 

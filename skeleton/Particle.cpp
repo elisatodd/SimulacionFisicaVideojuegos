@@ -1,6 +1,8 @@
 #include "Particle.h"
 #include "Proyectile.h"
 
+#include <iostream>
+
 Particle::Particle(ParticleTypes t, float r, Vector3 p, Vector3 v, Vector3 a, float d) : 
 	myPType(t), pose(p), vel(v), radius(r), damping(d), acceleration(a)
 {
@@ -41,8 +43,39 @@ Particle::~Particle()
 
 bool Particle::integrate(double t)
 {
-	vel = (vel * pow(damping, t)) + (acceleration*t);
-	pose.p = pose.p + vel * t;
+	if (affectedByForces) {
+
+		float inverseMass = getInvMass();
+
+		// Trivial case, infinite mass --> do nothing
+		if (inverseMass > 0.0f) {
+
+			// Update position
+			pose.p += vel * t;
+
+			Vector3 totalAcceleration = acceleration;
+			totalAcceleration += (force * inverseMass);
+			/*std::cout << "Force in y : " << force.y << std::endl;
+			std::cout << "Acc in y : " << acceleration.y << std::endl;
+			std::cout << "Inverse of mass: " << inverseMass << std::endl;
+			std::cout << "Total Acceleration in y: " << totalAcceleration.y << std::endl;*/
+
+			// Update linear velocity
+			vel += (totalAcceleration * t);
+
+			// Impose drag (damping)
+			vel *= powf(damping, t);
+
+			//std::cout << totalAcceleration.x << totalAcceleration.y << totalAcceleration.z << std::endl;
+			clearForce();
+		};
+	}
+	else {
+
+		// Versión anterior a las fuerzas
+		vel = (vel * pow(damping, t)) + (acceleration*t);
+		pose.p = pose.p + vel * t;
+	}
 
 	if (remainingTime > 0) remainingTime -= t;
 
@@ -56,4 +89,12 @@ Particle* Particle::clone() const
 	auto a = new Particle(myPType, radius, pose.p, vel, acceleration, damping);
 	return a;
 	
+}
+
+void Particle::clearForce() {
+	force = Vector3{ 0.0, 0.0, 0.0 };
+}
+
+void Particle::addForce(const Vector3& f) {
+	force = f;
 }

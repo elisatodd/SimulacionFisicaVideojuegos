@@ -5,8 +5,13 @@
 #include "Proyectile.h"
 #include "Firework.h"
 
+#include "GravityForceGenerator.h"
+
 ParticleSystem::ParticleSystem() : _particles(0)
 {
+    pfr = new ParticleForceRegistry();
+
+
     addParticleGenerator("Bubble_Cannon", ProyectileTypes::Bubble, GeneratorTypes::normal,
         GetCamera()->getDir() * 10, GetCamera()->getEye() + GetCamera()->getDir() * 3,
         { 1.0, 1.0, 1.0 }, { 1.0, 1.0, 1.0 }, 0.5, 1, 5.0);
@@ -14,15 +19,8 @@ ParticleSystem::ParticleSystem() : _particles(0)
     addParticleGenerator("Ball_Fountain", ProyectileTypes::Ball, GeneratorTypes::uniform,
         { 0.0, 20.0, 0.0 }, { 20, 10, 20 }, { 6.0, 3.0, 6.0 }, { 1.0, 1.0, 1.0 }, 0.5, 5, 10.0);
 
-    addParticleGenerator("?", ProyectileTypes::Bullet, GeneratorTypes::normal,
-        	{ 0.0, 50.0, 0.0 }, { 20, 10, 20 }, { 4.0, 3.0, 4.0 }, { 1.0, 1.0, 1.0 }, 0.5, 10, 5.0);
-
     addParticleGenerator("Beehive", ProyectileTypes::Bullet, GeneratorTypes::normal,
         { 0.0, 50.0, 0.0 }, { 20, 10, 20 }, { 4.0, 3.0, 4.0 }, { 1.0, 1.0, 1.0 }, 0.5, 10, 5.0);
-
-    addParticleGenerator("Beehive2", ProyectileTypes::Bullet, GeneratorTypes::normal,
-        GetCamera()->getDir() * 50, GetCamera()->getEye() + GetCamera()->getDir(),
-        { 1.0, 1.0, 1.0 }, { 0.5, 0.5, 0.5 }, 0.5, 10, 5.0);
 
     addParticleGenerator("Bullet_Rain", ProyectileTypes::Bullet, GeneratorTypes::normal,
         	{ 0.0, 50.0, 0.0 }, { 20, 10, 20 }, { 4.0, 3.0, 4.0 }, { 1.0, 1.0, 1.0 }, 0.5, 10, 5.0);
@@ -143,6 +141,8 @@ void ParticleSystem::deactivateAllParticleGenerators()
 
 void ParticleSystem::update(double t)
 {
+    pfr->updateForces(t);
+
     for (auto p : _particle_generators) {
         if (p->getActive()) {
             auto l = p->generateParticles();
@@ -155,10 +155,10 @@ void ParticleSystem::update(double t)
     for (auto p : _particles) {
         // DELETE CONDITION
         // p->getTime() <= 0 || p->getPose().p.y <= 0 || p->getPose().p.y >= 200.0
-        if (!p->integrate(t))  
-        {
+       if (!p->integrate(t))  
+       {
             onParticleDeath(p);
-        }
+       }
     }
 
     auto p = _particles.begin();
@@ -257,4 +257,51 @@ void ParticleSystem::shootFirework(int type)
     auto p = gen->generateParticles().front();
 
     _particles.push_back(p);
+}
+
+void ParticleSystem::addBubbles()
+{
+    auto p = new Proyectile(ProyectileTypes::Bubble);
+    p->setABF(true);
+    p->setPosition({ 40.0, 50.0, 40.0 });
+    p->setAcc({ 0.0, 0.0, 0.0 });
+    p->setVel({ 0.0, 0.0, 0.0 });
+    p->setRemainingTime(MAXINT);
+    p->setMass(50000.0f);
+    p->setDamping(0.1f);
+    _particles.push_back(p);
+
+    auto p2 = new Proyectile(ProyectileTypes::Bubble);
+    p2->setABF(true);
+    p2->setPosition({ 45.0, 50.0, 35.0 });
+    p2->setAcc({ 0.0, 0.0, 0.0 });
+    p2->setVel({ 0.0, 0.0, 0.0 });
+    p2->setRemainingTime(MAXINT);
+    p2->setMass(50000.0f);
+    p2->setDamping(0.9f); // caerá más rápido que p1
+    _particles.push_back(p2);
+
+    auto gfg = new GravityForceGenerator({ 0.0, -9.8, 0.0 });
+
+    pfr->addRegistry(gfg, p);
+    pfr->addRegistry(gfg, p2);
+}
+
+void ParticleSystem::addDifferentABF() { // dispara 2 burbujas, una a la que le afecta la G y otra no
+    // DUDA -> CAE MUY RÀPIDO
+    auto p = new Proyectile(ProyectileTypes::Bubble);
+    p->setABF(true);
+    p->setPosition({ 40.0, 50.0, 40.0 });
+    p->setRemainingTime(MAXINT);
+    p->setMass(500000.0f);
+    _particles.push_back(p);
+
+    auto p2 = new Proyectile(ProyectileTypes::Bubble);
+    p2->setPosition({ 45.0, 50.0, 35.0 });
+    p2->setRemainingTime(MAXINT);
+    _particles.push_back(p2);
+
+    auto gfg = new GravityForceGenerator({ 0.0, -9.8, 0.0 });
+
+    pfr->addRegistry(gfg, p);
 }

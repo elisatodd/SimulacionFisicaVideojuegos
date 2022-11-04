@@ -207,7 +207,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 		break;
 	}
-	case 'C' : { // distribución con forma
+	case 'C' : { // firework con forma
 		fromCamera = false;
 		auto p = pSys->getParticleGenerator("ShapeTest");
 		auto l = p->generateParticles();
@@ -216,6 +216,18 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		for (auto part : l) {
 			pSys->addParticle(part);
 		}
+		break;
+	}
+	case 'G': { // añade 2 particulas a las que la gravedad afecta de forma distinta
+
+		pSys->addBubbles();
+
+		break;
+	}
+	case 'H': { // añade 2 partículas, una a la que le afecta la fuerza de la gravedad y otra a la que no
+
+		pSys->addDifferentABF(); 
+		break;
 	}
 	default:
 		break;

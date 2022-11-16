@@ -317,15 +317,17 @@ void ParticleSystem::testWind()
 {
     auto p = new Proyectile(ProyectileTypes::Bubble);
     p->setABF(true);
-    p->setPosition({ 0.0, 5.0, 0.0 });
-    p->setVel({-10.0, 0.0, -10.0});
-    p->setAcc({-1.0, 0.0 , -1.0});
+    p->setPosition({ 0.0, 0.0, 0.0 });
+    // p->setVel({-10.0, 0.0, -10.0});
+    p->setVel({0.0, 10.0, 0.0});
+   // p->setAcc({ -1.0, 0.0 , -1.0 });
+    p->setAcc({0.0 , 1.0, 0.0});
     p->setMass(20.0f);
     p->setRemainingTime(MAXINT);
 
     _particles.push_back(p);
 
-    auto wfg = new UniformWindGenerator(0.1, 0.2, {-10.0, 1.0, -10.0}, {0.0, 0.0, 0.0}, 50, 50, 50);
+    auto wfg = new UniformWindGenerator(0.1, 0.2, {-10.0, 1.0, -10.0}, {0.0, 10.0, 0.0}, 20, 20, 20);
     pfr->addRegistry(wfg, p);
 }
 

@@ -229,6 +229,25 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		pSys->addDifferentABF(); 
 		break;
 	}
+	case 'J': {
+		pSys->testWind();
+		break;
+	}
+	case 'K': {
+		pSys->testWhirlwind();
+		break;
+	}
+	case 'L':
+	{
+		pSys->generateParticles();
+		break;
+	}
+	case 'M':
+	{
+		pSys->testExplosion();
+		break;
+	}
+
 	default:
 		break;
 	}

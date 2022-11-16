@@ -36,6 +36,5 @@ list<Particle*> UniformParticleGenerator::generateParticles() // generates the p
         }
     }
    
-
     return generations;
 }

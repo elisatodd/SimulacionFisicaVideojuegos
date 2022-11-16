@@ -6,6 +6,10 @@
 #include "Firework.h"
 
 #include "GravityForceGenerator.h"
+#include "DragGenerator.h"
+#include "UniformWindGenerator.h"
+#include "WhirlwindGenerator.h"
+#include "ExplosionGenerator.h"
 
 ParticleSystem::ParticleSystem() : _particles(0)
 {
@@ -42,6 +46,8 @@ ParticleSystem::~ParticleSystem()
     //    delete* a;
         a = _particle_generators.erase(a);
     }
+
+    delete pfr;
 }
 
 void ParticleSystem::addParticleGenerator(string name, ProyectileTypes pT, GeneratorTypes gT, Vector3 mediavel, Vector3 mediapos, Vector3 anchovel, Vector3 anchopos, double genProb, int numPart, double time)
@@ -141,6 +147,7 @@ void ParticleSystem::deactivateAllParticleGenerators()
 
 void ParticleSystem::update(double t)
 {
+    if (explosionActive) exp->addConst(t);
     pfr->updateForces(t);
 
     for (auto p : _particle_generators) {
@@ -267,7 +274,7 @@ void ParticleSystem::addBubbles()
     p->setAcc({ 0.0, 0.0, 0.0 });
     p->setVel({ 0.0, 0.0, 0.0 });
     p->setRemainingTime(MAXINT);
-    p->setMass(50000.0f);
+    p->setMass(40.0f);
     p->setDamping(0.1f);
     _particles.push_back(p);
 
@@ -277,7 +284,7 @@ void ParticleSystem::addBubbles()
     p2->setAcc({ 0.0, 0.0, 0.0 });
     p2->setVel({ 0.0, 0.0, 0.0 });
     p2->setRemainingTime(MAXINT);
-    p2->setMass(50000.0f);
+    p2->setMass(20.0f); // aunque tengan masas distintas, esto no afecta
     p2->setDamping(0.9f); // caerá más rápido que p1
     _particles.push_back(p2);
 
@@ -293,7 +300,7 @@ void ParticleSystem::addDifferentABF() { // dispara 2 burbujas, una a la que le 
     p->setABF(true);
     p->setPosition({ 40.0, 50.0, 40.0 });
     p->setRemainingTime(MAXINT);
-    p->setMass(500000.0f);
+    p->setMass(20.0f);
     _particles.push_back(p);
 
     auto p2 = new Proyectile(ProyectileTypes::Bubble);
@@ -304,4 +311,69 @@ void ParticleSystem::addDifferentABF() { // dispara 2 burbujas, una a la que le 
     auto gfg = new GravityForceGenerator({ 0.0, -9.8, 0.0 });
 
     pfr->addRegistry(gfg, p);
+}
+
+void ParticleSystem::testWind()
+{
+    auto p = new Proyectile(ProyectileTypes::Bubble);
+    p->setABF(true);
+    p->setPosition({ 0.0, 5.0, 0.0 });
+    p->setVel({-10.0, 0.0, -10.0});
+    p->setAcc({-1.0, 0.0 , -1.0});
+    p->setMass(20.0f);
+    p->setRemainingTime(MAXINT);
+
+    _particles.push_back(p);
+
+    auto wfg = new UniformWindGenerator(0.1, 0.2, {-10.0, 1.0, -10.0}, {0.0, 0.0, 0.0}, 50, 50, 50);
+    pfr->addRegistry(wfg, p);
+}
+
+void ParticleSystem::testWhirlwind()
+{
+    auto p = new Proyectile(ProyectileTypes::Bubble);
+    p->setABF(true);
+    p->setPosition({ 20.0, 10.0, 10.0 });
+    p->setVel({ 0.0, 0.0, 0.0 });
+    p->setAcc({ 0.0, 0.0 , 0.0 });
+    p->setMass(20.0f);
+    p->setRemainingTime(MAXINT);
+
+    _particles.push_back(p);
+
+    auto wfg = new WhirlwindGenerator(0.1, 0.2, {0.0, 0.0, 0.0});
+    pfr->addRegistry(wfg, p);
+
+    auto gfg = new GravityForceGenerator({ 0.0, -9.8, 0.0 });
+    pfr->addRegistry(gfg, p);
+}
+
+void ParticleSystem::generateParticles()
+{
+    std::default_random_engine rnd{ std::random_device{}() };
+    std::uniform_real_distribution<float> interval(-20, 20);
+    for (int i = 0; i < 50; ++i) {
+        auto p = new Proyectile(ProyectileTypes::Bubble);
+
+
+        p->setPosition({ interval(rnd), interval(rnd), interval(rnd)});
+        p->setVel({ 0.0, 0.0, 0.0 });
+        p->setAcc({ 0.0, 0.0 , 0.0 });
+        p->setMass(20.0f);
+        p->setDamping(0.99);
+        p->setRemainingTime(MAXINT);
+
+        _particles.push_back(p);
+    }
+}
+
+void ParticleSystem::testExplosion()
+{
+    explosionActive = true;
+    exp = new ExplosionGenerator(100.0, 150.0, {0.0, 0.0, 0.0});
+
+    for (auto p : _particles) {
+        p->setABF(true);
+        pfr->addRegistry(exp, p);
+    }
 }

@@ -4,6 +4,7 @@
 #include "Proyectile.h"
 #include "ParticleGenerator.h"
 #include "ParticleForceRegistry.h"
+#include "ExplosionGenerator.h"
 
 class Firework;
 
@@ -39,8 +40,16 @@ public:
 	void shootFirework(int type);
 
 	// FUERZAS
+		// gravitatoria
 	void addBubbles();
 	void addDifferentABF();
+		// viento
+	void testWind();
+		// torbellino
+	void testWhirlwind();
+		// explosión
+	void generateParticles();
+	void testExplosion();
 
 private:
 	std::list<Particle*> _particles;
@@ -50,6 +59,8 @@ private:
 	std::vector<Firework*> _firework_pool;
 
 	ParticleForceRegistry* pfr;
+	ExplosionGenerator* exp;
+	bool explosionActive = false;
 
 };
 

@@ -31,7 +31,14 @@ Particle::Particle(ParticleTypes t, float r, Vector3 p, Vector3 v, Vector3 a, fl
 		renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(radius)), &pose, {1.0, 1.0, 0.0, 1.0});
 		break;
 
+	case (BoxT):
+
+		renderItem = new RenderItem(CreateShape(physx::PxBoxGeometry(r, r, r)), &pose, { 0.6, 1.0, 0.0, 1.0 });
+		break;
+
 	}
+	// las particulas tienen tiempo de vida infinito por deefcto
+	setRemainingTime(MAXINT);
 }
 
 Particle::~Particle()

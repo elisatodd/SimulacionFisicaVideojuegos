@@ -7,7 +7,8 @@ enum ParticleTypes {
 	ProyectileT,
 	TargetT,
 	FloorT,
-	FireworkT
+	FireworkT,
+	BoxT
 };
 
 class Particle

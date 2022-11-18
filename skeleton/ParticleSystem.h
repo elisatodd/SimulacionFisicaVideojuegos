@@ -51,6 +51,9 @@ public:
 	void generateParticles();
 	void testExplosion();
 
+	// MUELLES
+	void testSpring();
+
 private:
 	std::list<Particle*> _particles;
 	//std::list<ParticleGenerator*> _particle_generators;
@@ -61,6 +64,8 @@ private:
 	ParticleForceRegistry* pfr;
 	ExplosionGenerator* exp;
 	bool explosionActive = false;
+
+	std::list<ForceGenerator*> _forceGenerators;
 
 };
 

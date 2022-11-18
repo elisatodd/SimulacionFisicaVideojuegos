@@ -11,6 +11,8 @@
 #include "WhirlwindGenerator.h"
 #include "ExplosionGenerator.h"
 
+#include "SpringForceGenerator.h"
+
 ParticleSystem::ParticleSystem() : _particles(0)
 {
     pfr = new ParticleForceRegistry();
@@ -45,6 +47,11 @@ ParticleSystem::~ParticleSystem()
     while (a != _particle_generators.end()) {
     //    delete* a;
         a = _particle_generators.erase(a);
+    }
+
+    auto r = _forceGenerators.begin();
+    while (r != _forceGenerators.end()) {
+        r = _forceGenerators.erase(r);
     }
 
     delete pfr;
@@ -171,6 +178,7 @@ void ParticleSystem::update(double t)
     auto p = _particles.begin();
     while (p != _particles.end()) {
         if (!(*p)->isAlive()) {
+            pfr->deleteParticleRegistry(*p);
             delete* p;
             p = _particles.erase(p);
         }
@@ -344,10 +352,18 @@ void ParticleSystem::testWhirlwind()
     _particles.push_back(p);
 
     auto wfg = new WhirlwindGenerator(0.1, 0.2, {0.0, 0.0, 0.0});
-    pfr->addRegistry(wfg, p);
+    //pfr->addRegistry(wfg, p);
 
     auto gfg = new GravityForceGenerator({ 0.0, -9.8, 0.0 });
     pfr->addRegistry(gfg, p);
+
+    for (auto pa : _particles) {
+        pa->setABF(true);
+        pa->setVel({ 0.0, 0.0, 0.0 });
+        pa->setAcc({ 0.0, 0.0 , 0.0 });
+        pa->setMass(20.0f);
+        pfr->addRegistry(wfg, pa);
+    }
 }
 
 void ParticleSystem::generateParticles()
@@ -378,4 +394,28 @@ void ParticleSystem::testExplosion()
         p->setABF(true);
         pfr->addRegistry(exp, p);
     }
+}
+
+void ParticleSystem::testSpring()
+{
+    // Caja estática
+    Particle* p1 = new Particle(BoxT, 4.0, { 10.0, 50.0, 0.0 });
+
+    Particle* p2 = new Proyectile(BasicStatic, { 10.0, 49.0, 0.0 });
+    p2->setMass(1.0);
+    p2->setDamping(0.99);
+    p2->setABF(true);
+
+    _particles.push_back(p1);
+    _particles.push_back(p2);
+
+    SpringForceGenerator* sfg = new SpringForceGenerator(p1, 1, 20);
+    pfr->addRegistry(sfg, p2);
+
+    GravityForceGenerator* gfg = new GravityForceGenerator({0.0, -9.8, 0.0});
+    pfr->addRegistry(gfg, p2);
+
+
+    _forceGenerators.push_back(sfg);
+    _forceGenerators.push_back(gfg);
 }

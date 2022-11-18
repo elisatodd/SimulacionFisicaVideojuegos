@@ -6,13 +6,14 @@ enum ProyectileTypes {
 	Bullet,
 	Ball,
 	Smoke,
-	Firework0
+	Firework0,
+	BasicStatic
 };
 
 class Proyectile : public Particle {
 
 public:							
-	Proyectile(ProyectileTypes t) : Particle(ParticleTypes::ProyectileT) {
+	Proyectile(ProyectileTypes t, Vector3 pos = {0.0, 0.0, 0.0}) : Particle(ParticleTypes::ProyectileT, 0.0, pos) {
 	
 		myType = t;
 		Vector3 newPos, newVel;
@@ -76,8 +77,14 @@ public:
 			setDamping(firework_0_damping);
 
 			break;
-		}
+		case BasicStatic:
+			renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(2)), &pose, {1.0, 0.0, 1.0, 1.0});
 
+			setAcc({0.0, 0.0, 0.0});
+			setVel({0.0, 0.0, 0.0});
+
+			break;
+		}
 	}; 
 
 	~Proyectile() {};

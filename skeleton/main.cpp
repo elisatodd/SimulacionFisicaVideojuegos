@@ -248,6 +248,12 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		break;
 	}
 
+	case 'Z':
+	{
+		pSys->testSpring();
+		break;
+	}
+
 	default:
 		break;
 	}

@@ -253,6 +253,16 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		pSys->testSpring();
 		break;
 	}
+	case '+':
+	{
+		pSys->addKSpring();
+		break;
+	}
+	case '-':
+	{
+		pSys->subKSpring();
+		break;
+	}
 
 	default:
 		break;

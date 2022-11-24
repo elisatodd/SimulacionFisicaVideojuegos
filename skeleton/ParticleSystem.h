@@ -5,6 +5,7 @@
 #include "ParticleGenerator.h"
 #include "ParticleForceRegistry.h"
 #include "ExplosionGenerator.h"
+#include "SpringForceGenerator.h"
 
 class Firework;
 
@@ -53,6 +54,9 @@ public:
 
 	// MUELLES
 	void testSpring();
+	void addKSpring();
+	void subKSpring();
+
 
 private:
 	std::list<Particle*> _particles;
@@ -62,10 +66,12 @@ private:
 	std::vector<Firework*> _firework_pool;
 
 	ParticleForceRegistry* pfr;
+	std::list<ForceGenerator*> _forceGenerators;
+	
 	ExplosionGenerator* exp;
 	bool explosionActive = false;
 
-	std::list<ForceGenerator*> _forceGenerators;
-
+	SpringForceGenerator* sfg;
+	bool springActive = false;
 };
 

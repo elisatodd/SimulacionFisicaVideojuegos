@@ -16,8 +16,9 @@ public:
 	void updateForce(Particle* p, double t);
 
 	inline void setK(double K) { _K = K; }
+	inline double getK() { return _K; }
 
-	virtual ~SpringForceGenerator() {}
+	virtual ~SpringForceGenerator() { }
 
 protected:
 	double _K; // elastic coef.

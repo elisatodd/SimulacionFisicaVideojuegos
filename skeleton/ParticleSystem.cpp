@@ -408,14 +408,27 @@ void ParticleSystem::testSpring()
 
     _particles.push_back(p1);
     _particles.push_back(p2);
-
-    SpringForceGenerator* sfg = new SpringForceGenerator(p1, 1, 20);
+     
+    sfg = new SpringForceGenerator(p1, 1, 20);
     pfr->addRegistry(sfg, p2);
 
     GravityForceGenerator* gfg = new GravityForceGenerator({0.0, -9.8, 0.0});
     pfr->addRegistry(gfg, p2);
 
-
     _forceGenerators.push_back(sfg);
     _forceGenerators.push_back(gfg);
+
+    springActive = true;
+}
+
+void ParticleSystem::addKSpring()
+{
+    if (springActive)
+        sfg->setK(sfg->getK() + 10);
+}
+
+void ParticleSystem::subKSpring()
+{
+    if (springActive)
+        sfg->setK(sfg->getK() - 10);
 }

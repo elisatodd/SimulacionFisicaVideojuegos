@@ -36,6 +36,8 @@ Particle::Particle(ParticleTypes t, float r, Vector3 p, Vector3 v, Vector3 a, fl
 		renderItem = new RenderItem(CreateShape(physx::PxBoxGeometry(r, r, r)), &pose, { 0.6, 1.0, 0.0, 1.0 });
 		break;
 
+	case (WaterT):
+		renderItem = new RenderItem(CreateShape(physx::PxBoxGeometry(r, 0.5, r)), &pose, { 0.0, 0.2, 0.8, 1.0 });
 	}
 	// las particulas tienen tiempo de vida infinito por deefcto
 	setRemainingTime(MAXINT);
@@ -58,7 +60,8 @@ bool Particle::integrate(double t)
 		if (inverseMass > 0.0f) {
 
 			// Update position
-			pose.p += vel * t;
+			if (!semiImplicit)
+				pose.p += vel * t;
 
 			Vector3 totalAcceleration = acceleration;
 			totalAcceleration += (force * inverseMass);
@@ -72,6 +75,10 @@ bool Particle::integrate(double t)
 
 			// Impose drag (damping)
 			vel *= powf(damping, t);
+
+			// Update position
+			if (semiImplicit)
+				pose.p += vel * t;
 
 			//std::cout << totalAcceleration.x << totalAcceleration.y << totalAcceleration.z << std::endl;
 			clearForce();
@@ -103,5 +110,5 @@ void Particle::clearForce() {
 }
 
 void Particle::addForce(const Vector3& f) {
-	force = f;
+	force += f;
 }

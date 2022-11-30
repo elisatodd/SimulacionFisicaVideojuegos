@@ -6,6 +6,7 @@
 #include "ParticleForceRegistry.h"
 #include "ExplosionGenerator.h"
 #include "SpringForceGenerator.h"
+#include "BuoyancyForceGenerator.h"
 
 class Firework;
 
@@ -57,6 +58,15 @@ public:
 	void addKSpring();
 	void subKSpring();
 
+	void testSprings();
+
+	void testRubberBand();
+
+	void testSlinky();
+
+	void testFloat();
+	void addMass();
+	void subMass();
 
 private:
 	std::list<Particle*> _particles;
@@ -73,5 +83,9 @@ private:
 
 	SpringForceGenerator* sfg;
 	bool springActive = false;
+
+	BuoyancyForceGenerator* bfg;
+	bool waterActive = false;
+	Particle* box = nullptr;
 };
 

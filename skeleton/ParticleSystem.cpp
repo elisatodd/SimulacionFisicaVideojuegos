@@ -12,6 +12,8 @@
 #include "ExplosionGenerator.h"
 
 #include "SpringForceGenerator.h"
+#include "RubberBandGenerator.h"
+#include "BuoyancyForceGenerator.h"
 
 ParticleSystem::ParticleSystem() : _particles(0)
 {
@@ -118,8 +120,6 @@ void ParticleSystem::addParticle(Particle* p)
 {
     _particles.push_back(p);
 }
-
-
 
 void ParticleSystem::removeParticleGenerator(string name)
 {
@@ -403,13 +403,13 @@ void ParticleSystem::testSpring()
 
     Particle* p2 = new Proyectile(BasicStatic, { 10.0, 49.0, 0.0 });
     p2->setMass(1.0);
-    p2->setDamping(0.99);
+    p2->setDamping(0.85);
     p2->setABF(true);
 
     _particles.push_back(p1);
     _particles.push_back(p2);
      
-    sfg = new SpringForceGenerator(p1, 1, 20);
+    sfg = new SpringForceGenerator(p1, 10, 20);
     pfr->addRegistry(sfg, p2);
 
     GravityForceGenerator* gfg = new GravityForceGenerator({0.0, -9.8, 0.0});
@@ -423,12 +423,211 @@ void ParticleSystem::testSpring()
 
 void ParticleSystem::addKSpring()
 {
-    if (springActive)
+    if (springActive) {
         sfg->setK(sfg->getK() + 10);
+        cout << "Spring constant: " << sfg->getK() << "\n";
+    }
+
+    if (waterActive) {
+        bfg->setVolume(bfg->getVolume() + 10);
+        cout << "Object Volume: " << bfg->getVolume() << "\n";
+    }
 }
 
 void ParticleSystem::subKSpring()
 {
-    if (springActive)
+    if (springActive) {
         sfg->setK(sfg->getK() - 10);
+        cout << "Spring constant: " << sfg->getK() << "\n";
+    }
+
+    if (waterActive) {
+        bfg->setVolume(bfg->getVolume() - 10);
+        cout << "Object Volume: " << bfg->getVolume() << "\n";
+    }
+}
+
+void ParticleSystem::testSprings()
+{
+    // Importante! La separación inicial entre las partículas debe ser mayor que el l_0 que pasamos al generador del muelle
+    Particle* p1 = new Proyectile(BasicStatic, { -20.0, 20.0, 0.0 });
+    p1->setMass(2.0);
+    p1->setDamping(0.85);
+    p1->setABF(true);
+    p1->setSemiImplicit(true);
+
+    Particle* p2 = new Proyectile(BasicStatic, { 20.0, 20.0, 0.0 });
+    p2->setMass(2.0);
+    p2->setDamping(0.85);
+    p2->setABF(true);
+    p2->setColor({0.0, 1.0, 1.0, 1.0}); // cyan
+    p2->setSemiImplicit(true);
+
+    _particles.push_back(p1);
+    _particles.push_back(p2);
+
+    auto sfg1 = new SpringForceGenerator(p2, 10, 10, 0, 40);
+    pfr->addRegistry(sfg1, p1);
+
+    auto sfg2 = new SpringForceGenerator(p1, 10, 10, 0, 40);
+    pfr->addRegistry(sfg2, p2);
+
+    //GravityForceGenerator* gfg = new GravityForceGenerator({ 0.0, -9.8, 0.0 });
+    //pfr->addRegistry(gfg, p1);
+    //pfr->addRegistry(gfg, p2);
+
+    _forceGenerators.push_back(sfg1);
+    _forceGenerators.push_back(sfg2);
+    //_forceGenerators.push_back(gfg);
+}
+
+void ParticleSystem::testRubberBand()
+{
+    Particle* p1 = new Proyectile(BasicStatic, { -20.0, 20.0, 0.0 });
+    p1->setMass(2.0);
+    p1->setDamping(0.85);
+    p1->setABF(true);
+    p1->setVel({-20.0, 0.0, 0.0});
+    Particle* p2 = new Proyectile(BasicStatic, { 20.0, 20.0, 0.0 });
+    p2->setMass(2.0);
+    p2->setDamping(0.85);
+    p2->setABF(true);
+    p2->setVel({20.0, 0.0, 0.0});
+    p2->setColor({ 0.0, 1.0, 1.0, 1.0 }); // cyan
+
+    _particles.push_back(p1);
+    _particles.push_back(p2);
+
+    auto sfg1 = new RubberBandGenerator(p2, 15, 10);
+    pfr->addRegistry(sfg1, p1);
+
+    auto sfg2 = new RubberBandGenerator(p1, 15, 10);
+    pfr->addRegistry(sfg2, p2);
+
+    _forceGenerators.push_back(sfg1);
+    _forceGenerators.push_back(sfg2);
+
+    //GravityForceGenerator* gfg = new GravityForceGenerator({ 5.0, 0.0, 5.0 });
+    //pfr->addRegistry(gfg, p1);
+    //GravityForceGenerator* gfg2 = new GravityForceGenerator({ -5.0, 0.0, -5.0 });
+    //pfr->addRegistry(gfg2, p2);
+}
+
+void ParticleSystem::testSlinky()
+{
+    Particle* p0 = new Proyectile(BasicStatic, { 20.0, 65.0, 20.0 });
+    p0->setMass(2.0);
+    p0->setDamping(0.85);
+    p0->setABF(true);
+    p0->setColor({ 0.0, 0.5, 1.0, 1.0 }); // blue
+    Particle* p1 = new Proyectile(BasicStatic, { 20.0, 60.0, 20.0 });
+    p1->setMass(2.0);
+    p1->setDamping(0.85);
+    p1->setABF(true);
+    p1->setColor({ 0.0, 1.0, 0.0, 1.0 }); // green
+    Particle* p2 = new Proyectile(BasicStatic, { 20.0, 55.0, 20.0 });
+    p2->setMass(2.0);
+    p2->setDamping(0.85);
+    p2->setABF(true);
+    p2->setColor({ 1.0, 1.0, 0.0, 1.0 }); // yellow
+    Particle* p3 = new Proyectile(BasicStatic, { 20.0, 50.0, 20.0 });
+    p3->setMass(2.0);
+    p3->setDamping(0.85);
+    p3->setABF(true);
+    p3->setColor({ 1.0, 0.5, 0.0, 1.0 }); // orange
+    Particle* p4 = new Proyectile(BasicStatic, { 20.0, 45.0, 20.0 });
+    p4->setMass(2.0);
+    p4->setDamping(0.85);
+    p4->setABF(true);
+    p4->setColor({ 1.0, 0.0, 0.0, 1.0 }); // red
+
+    _particles.push_back(p0);
+    _particles.push_back(p1);
+    _particles.push_back(p2);
+    _particles.push_back(p3);
+    _particles.push_back(p4);
+
+    // Caja estática
+    Particle* box = new Particle(BoxT, 2.0, { 20.0, 70.0, 20.0 });
+
+    SpringForceGenerator* base = new SpringForceGenerator(box, 65, 6);
+    pfr->addRegistry(base, p0);
+
+    auto sfg0 = new SpringForceGenerator(p0, 60, 6);
+    pfr->addRegistry(sfg0, p1);
+
+    auto sfg4 = new SpringForceGenerator(p1, 55, 6);
+    pfr->addRegistry(sfg4, p0);
+
+    auto sfg1 = new SpringForceGenerator(p1, 50, 6);
+    pfr->addRegistry(sfg1, p2);
+
+    auto sfg5 = new SpringForceGenerator(p2, 45, 6);
+    pfr->addRegistry(sfg5, p1);
+
+    auto sfg2 = new SpringForceGenerator(p2, 40, 6);
+    pfr->addRegistry(sfg2, p3);
+
+    auto sfg6 = new SpringForceGenerator(p3, 35, 6);
+    pfr->addRegistry(sfg6, p2);
+
+    auto sfg3 = new SpringForceGenerator(p3, 30, 6);
+    pfr->addRegistry(sfg3, p4);
+
+    auto sfg7 = new SpringForceGenerator(p4, 25, 6);
+    pfr->addRegistry(sfg7, p3);
+
+    GravityForceGenerator* gfg = new GravityForceGenerator({ 0.0, -9.8, 0.0 });
+    pfr->addRegistry(gfg, p0);
+    pfr->addRegistry(gfg, p1);
+    pfr->addRegistry(gfg, p2);
+    pfr->addRegistry(gfg, p3);
+    pfr->addRegistry(gfg, p4);
+
+    _forceGenerators.push_back(sfg0);
+    _forceGenerators.push_back(sfg1);
+    _forceGenerators.push_back(sfg2);
+    _forceGenerators.push_back(sfg3);
+    _forceGenerators.push_back(gfg);
+}
+
+void ParticleSystem::testFloat()
+{
+    Particle* water = new Particle(ParticleTypes::WaterT, 20.0, { 10.0, 40.0, 0.0 });
+    box = new Particle(BoxT, 3.0, { 10.0, 40.0, 0.0 });
+    box->setABF(true);
+    box->setDamping(0.85);
+    box->setMass(0.5); // medio kg
+    box->setColor({ 0.0, 1.0, 1.0, 0.0 });
+
+    _particles.push_back(water);
+    _particles.push_back(box);
+
+    // Si la masa supera el volumen, el objeto se hunde!
+    bfg = new BuoyancyForceGenerator(1, 11.0, 10, water); // altura de box, volumen de box, densidad del agua
+    pfr->addRegistry(bfg, box);
+
+    GravityForceGenerator* gfg = new GravityForceGenerator({ 0.0, -9.8, 0.0 });
+    pfr->addRegistry(gfg, box);
+
+    _forceGenerators.push_back(bfg);
+    _forceGenerators.push_back(gfg);
+
+    waterActive = true;
+}
+
+void ParticleSystem::addMass() // añade 1/2 kg
+{
+    if (waterActive) {
+        box->setMass(box->getMass() + 0.5);
+        cout << "Box Mass: " << box->getMass() << "\n";
+    }
+}
+
+void ParticleSystem::subMass() // resta 1/2 kg
+{
+    if (waterActive) {
+        box->setMass(box->getMass() - 0.5);
+        cout << "Box Mass: " << box->getMass() << "\n";
+    }
 }

@@ -153,10 +153,10 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	{
 		break;
 	}
-	case 'F': {
-		pSys->shootFirework(3);
-		break;
-	}
+	//case 'F': {
+	//	pSys->shootFirework(3);
+	//	break;
+	//}
 	case 'B': // Bubble Cannon
 	{
 			// Disparar 1 burbuja
@@ -207,17 +207,17 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 		break;
 	}
-	case 'C' : { // firework con forma
-		fromCamera = false;
-		auto p = pSys->getParticleGenerator("ShapeTest");
-		auto l = p->generateParticles();
-		//p->setActive(!p->getActive());
+	//case 'C' : { // firework con forma
+	//	fromCamera = false;
+	//	auto p = pSys->getParticleGenerator("ShapeTest");
+	//	auto l = p->generateParticles();
+	//	//p->setActive(!p->getActive());
 
-		for (auto part : l) {
-			pSys->addParticle(part);
-		}
-		break;
-	}
+	//	for (auto part : l) {
+	//		pSys->addParticle(part);
+	//	}
+	//	break;
+	//}
 	case 'G': { // añade 2 particulas a las que la gravedad afecta de forma distinta
 
 		pSys->addBubbles();
@@ -261,6 +261,33 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	case '-':
 	{
 		pSys->subKSpring();
+		break;
+	}
+	case 'X':
+	{
+		pSys->testSprings();
+		break;
+	}
+	case 'V':
+	{
+		pSys->testRubberBand();
+		break;
+	}
+	case 'C': 
+	{
+		pSys->testSlinky();
+		break;
+	}
+	case 'F': {
+		pSys->testFloat();
+		break;
+	}
+	case ',': {
+		pSys->addMass();
+		break;
+	}
+	case '.': {
+		pSys->subMass();
 		break;
 	}
 

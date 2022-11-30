@@ -8,7 +8,8 @@ enum ParticleTypes {
 	TargetT,
 	FloorT,
 	FireworkT,
-	BoxT
+	BoxT,
+	WaterT
 };
 
 class Particle
@@ -53,6 +54,8 @@ public:
 	float getMass() { return mass; }
 	void setMass(float m) { mass = m; }
 
+	// Muelles
+	inline void setSemiImplicit(bool s) { semiImplicit = s; }
 protected:
 
 	ParticleTypes myPType;
@@ -76,5 +79,8 @@ protected:
 	Vector3 force = {0.0, 0.0, 0.0};
 	float mass = 0.0f;
 
+	// MUELLES
+
+	bool semiImplicit = true;
 };
 

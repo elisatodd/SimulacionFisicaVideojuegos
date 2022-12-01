@@ -466,10 +466,10 @@ void ParticleSystem::testSprings()
     _particles.push_back(p1);
     _particles.push_back(p2);
 
-    auto sfg1 = new SpringForceGenerator(p2, 10, 10, 0, 40);
+    auto sfg1 = new SpringForceGenerator(p2, 10, 20, 0, 40);
     pfr->addRegistry(sfg1, p1);
 
-    auto sfg2 = new SpringForceGenerator(p1, 10, 10, 0, 40);
+    auto sfg2 = new SpringForceGenerator(p1, 10, 20, 0, 40);
     pfr->addRegistry(sfg2, p2);
 
     //GravityForceGenerator* gfg = new GravityForceGenerator({ 0.0, -9.8, 0.0 });
@@ -597,14 +597,14 @@ void ParticleSystem::testFloat()
     box = new Particle(BoxT, 3.0, { 10.0, 40.0, 0.0 });
     box->setABF(true);
     box->setDamping(0.85);
-    box->setMass(0.5); // medio kg
+    box->setMass(2.0); // medio kg
     box->setColor({ 0.0, 1.0, 1.0, 0.0 });
 
     _particles.push_back(water);
     _particles.push_back(box);
 
     // Si la masa supera el volumen, el objeto se hunde!
-    bfg = new BuoyancyForceGenerator(1, 11.0, 10, water); // altura de box, volumen de box, densidad del agua
+    bfg = new BuoyancyForceGenerator(1, 15.0, 10, water); // altura de box, volumen de box, densidad del agua
     pfr->addRegistry(bfg, box);
 
     GravityForceGenerator* gfg = new GravityForceGenerator({ 0.0, -9.8, 0.0 });

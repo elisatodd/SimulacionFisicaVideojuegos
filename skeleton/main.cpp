@@ -281,7 +281,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	case 'F': {
 		pSys->testFloat();
 		break;
-	}
+	}	
 	case ',': {
 		pSys->addMass();
 		break;

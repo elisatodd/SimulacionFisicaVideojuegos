@@ -1,3 +1,4 @@
+#pragma once
 #include <ctype.h>
 
 #include <PxPhysicsAPI.h>
@@ -15,6 +16,8 @@
 #include "Proyectile.h"
 #include "ParticleGenerator.h"
 #include "ParticleSystem.h"
+
+#include "WorldManager.h"
 
 using namespace physx;
 
@@ -38,6 +41,7 @@ Particle* particle;
 std::list<Particle*> particles;
 
 ParticleSystem* pSys;
+WorldManager* wM;
 bool fromCamera = false;
 string cameraGen;
 
@@ -66,10 +70,13 @@ void initPhysics(bool interactive)
 	gScene = gPhysics->createScene(sceneDesc);
 
 	//auto diana = new Particle(TargetT, 3.0f, {0.0, 50.0, 0.0});
-	auto suelo = new Particle(FloorT, 500.0, { -100.0, -5.0, -100.0 });
+	//auto suelo = new Particle(FloorT, 500.0, { -100.0, -5.0, -100.0 });
 
 	pSys = new ParticleSystem();
 	
+	wM = new WorldManager(gPhysics, gScene);
+	wM->createBaseScene();
+	wM->addRigidDynamic();
 }
 
 
@@ -116,6 +123,9 @@ void stepPhysics(bool interactive, double t)
 		g->setMeanVel(GetCamera()->getDir()*10);
 	}
 	pSys->update(t);
+
+
+	wM->update(t);
 }
 
 // Function to clean data
@@ -157,56 +167,56 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	//	pSys->shootFirework(3);
 	//	break;
 	//}
-	case 'B': // Bubble Cannon
-	{
-			// Disparar 1 burbuja
-		// particles.push_back(new Proyectile(ProyectileTypes::Bubble));
+	//case 'B': // Bubble Cannon
+	//{
+	//		// Disparar 1 burbuja
+	//	// particles.push_back(new Proyectile(ProyectileTypes::Bubble));
 
-			// Primera versión Generador de Partículas
-		//fromCamera = true;
-		//pSys->removeAllParticleGenerators();
-		//pSys->addParticleGenerator("GAUSSIAN", ProyectileTypes::Bubble, GeneratorTypes::normal,
-		//	GetCamera()->getDir() * 10, GetCamera()->getEye() + GetCamera()->getDir() * 3,
-		//	{1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}, 0.5, 1, 5.0);
+	//		// Primera versión Generador de Partículas
+	//	//fromCamera = true;
+	//	//pSys->removeAllParticleGenerators();
+	//	//pSys->addParticleGenerator("GAUSSIAN", ProyectileTypes::Bubble, GeneratorTypes::normal,
+	//	//	GetCamera()->getDir() * 10, GetCamera()->getEye() + GetCamera()->getDir() * 3,
+	//	//	{1.0, 1.0, 1.0}, {1.0, 1.0, 1.0}, 0.5, 1, 5.0);
 
-		fromCamera = true;
-		cameraGen = "Bubble_Cannon";
+	//	fromCamera = true;
+	//	cameraGen = "Bubble_Cannon";
 
-		auto p = pSys->getParticleGenerator("Bubble_Cannon");
-		p->setActive(!p->getActive());
-		break;
-	}
-	case 'N': // disparar una bala
-		particles.push_back(new Proyectile(ProyectileTypes::Bullet));
-		break;
+	//	auto p = pSys->getParticleGenerator("Bubble_Cannon");
+	//	p->setActive(!p->getActive());
+	//	break;
+	//}
+	//case 'N': // disparar una bala
+	//	particles.push_back(new Proyectile(ProyectileTypes::Bullet));
+	//	break;
 
-	case 'U': { // Fuente de pelotas
+	//case 'U': { // Fuente de pelotas
 
-		fromCamera = false;
-		auto p = pSys->getParticleGenerator("Ball_Fountain");
-		p->setActive(!p->getActive());
+	//	fromCamera = false;
+	//	auto p = pSys->getParticleGenerator("Ball_Fountain");
+	//	p->setActive(!p->getActive());
 
-		break;
-	}
-	case 'T': { // Avispero
+	//	break;
+	//}
+	//case 'T': { // Avispero
 
-		fromCamera = true;
-		cameraGen = "Beehive";
+	//	fromCamera = true;
+	//	cameraGen = "Beehive";
 
-		auto p = pSys->getParticleGenerator("Beehive");
-		p->setActive(!p->getActive());
+	//	auto p = pSys->getParticleGenerator("Beehive");
+	//	p->setActive(!p->getActive());
 
-		break;
+	//	break;
 
-	}
-	case 'R': { // Luvia de balas
-	
-		fromCamera = false;
-		auto p = pSys->getParticleGenerator("Bullet_Rain");
-		p->setActive(!p->getActive());
+	//}
+	//case 'R': { // Luvia de balas
+	//
+	//	fromCamera = false;
+	//	auto p = pSys->getParticleGenerator("Bullet_Rain");
+	//	p->setActive(!p->getActive());
 
-		break;
-	}
+	//	break;
+	//}
 	//case 'C' : { // firework con forma
 	//	fromCamera = false;
 	//	auto p = pSys->getParticleGenerator("ShapeTest");
@@ -218,79 +228,89 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	//	}
 	//	break;
 	//}
-	case 'G': { // añade 2 particulas a las que la gravedad afecta de forma distinta
+	//case 'G': { // añade 2 particulas a las que la gravedad afecta de forma distinta
 
-		pSys->addBubbles();
+	//	pSys->addBubbles();
 
-		break;
-	}
-	case 'H': { // añade 2 partículas, una a la que le afecta la fuerza de la gravedad y otra a la que no
+	//	break;
+	//}
+	//case 'H': { // añade 2 partículas, una a la que le afecta la fuerza de la gravedad y otra a la que no
 
-		pSys->addDifferentABF(); 
-		break;
-	}
-	case 'J': {
-		pSys->testWind();
-		break;
-	}
-	case 'K': {
-		pSys->testWhirlwind();
-		break;
-	}
-	case 'L':
-	{
-		pSys->generateParticles();
-		break;
-	}
-	case 'M':
-	{
-		pSys->testExplosion();
-		break;
-	}
+	//	pSys->addDifferentABF(); 
+	//	break;
+	//}
+	//case 'J': {
+	//	pSys->testWind();
+	//	break;
+	//}
+	//case 'K': {
+	//	pSys->testWhirlwind();
+	//	break;
+	//}
+	//case 'L':
+	//{
+	//	pSys->generateParticles();
+	//	break;
+	//}
+	//case 'M':
+	//{
+	//	pSys->testExplosion();
+	//	break;
+	//}
 
-	case 'Z':
-	{
-		pSys->testSpring();
-		break;
-	}
-	case '+':
-	{
-		pSys->addKSpring();
-		break;
-	}
-	case '-':
-	{
-		pSys->subKSpring();
-		break;
-	}
-	case 'X':
-	{
-		pSys->testSprings();
-		break;
-	}
-	case 'V':
-	{
-		pSys->testRubberBand();
-		break;
-	}
-	case 'C': 
-	{
-		pSys->testSlinky();
-		break;
-	}
-	case 'F': {
-		pSys->testFloat();
-		break;
-	}	
-	case ',': {
-		pSys->addMass();
-		break;
-	}
-	case '.': {
-		pSys->subMass();
-		break;
-	}
+	//case 'Z':
+	//{
+	//	pSys->testSpring();
+	//	break;
+	//}
+	//case '+':
+	//{
+	//	pSys->addKSpring();
+	//	break;
+	//}
+	//case '-':
+	//{
+	//	pSys->subKSpring();
+	//	break;
+	//}
+	//case 'X':
+	//{
+	//	pSys->testSprings();
+	//	break;
+	//}
+	//case 'V':
+	//{
+	//	pSys->testRubberBand();
+	//	break;
+	//}
+	//case 'C': 
+	//{
+	//	pSys->testSlinky();
+	//	break;
+	//}
+	//case 'F': {
+	//	pSys->testFloat();
+	//	break;
+	//}	
+	//case ',': {
+	//	pSys->addMass();
+	//	break;
+	//}
+	//case '.': {
+	//	pSys->subMass();
+	//	break;
+	//}
 
+	case 'T': 
+	{
+		wM->changeTorque();
+		break;
+	}
+	case 'E':
+	{
+		wM->changeExplosion();
+		break;
+	}
 	default:
 		break;
 	}

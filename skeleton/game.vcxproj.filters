@@ -28,6 +28,9 @@
     <ClCompile Include="SpringForceGenerator.cpp" />
     <ClCompile Include="RubberBandGenerator.cpp" />
     <ClCompile Include="BuoyancyForceGenerator.cpp" />
+    <ClCompile Include="WorldManager.cpp" />
+    <ClCompile Include="TorqueGenerator.cpp" />
+    <ClCompile Include="RigidBodyForceRegistry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -57,6 +60,9 @@
     <ClInclude Include="SpringForceGenerator.h" />
     <ClInclude Include="RubberBandGenerator.h" />
     <ClInclude Include="BuoyancyForceGenerator.h" />
+    <ClInclude Include="WorldManager.h" />
+    <ClInclude Include="TorqueGenerator.h" />
+    <ClInclude Include="RigidBodyForceRegistry.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

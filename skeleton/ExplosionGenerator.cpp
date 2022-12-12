@@ -34,3 +34,31 @@ void ExplosionGenerator::updateForce(Particle* p, double t)
 	//std::cout << "Particle position: " << p->getPose().p.x << "\t" << p->getPose().p.y << "\t" << p->getPose().p.z << "\n";
 	p->addForce(expForce);
 }
+
+void ExplosionGenerator::updateForceRB(physx::PxRigidDynamic* rb, double t)
+{
+	if (!_enabled)
+		return;
+
+	const double euler = std::exp(1.0);
+	auto pos = rb->getGlobalPose().p;
+	auto difX = pos.x - _centre.x;
+	auto difY = pos.y - _centre.y;
+	auto difZ = pos.z - _centre.z;
+
+	auto r2 = pow(difX, 2) + pow(difY, 2) + pow(difZ, 2);
+
+	if (r2 > pow(_R, 2))
+	{
+		return;
+	}
+		
+	auto x = (_K / r2) * difX * pow(euler, (-t / _const));
+	auto y = (_K / r2) * difY * pow(euler, (-t / _const));
+	auto z = (_K / r2) * difZ * pow(euler, (-t / _const));
+
+	Vector3 force(x, y, z);
+
+
+	rb->addForce(force);
+}

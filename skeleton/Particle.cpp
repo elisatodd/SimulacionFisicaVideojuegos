@@ -47,7 +47,6 @@ Particle::~Particle()
 {
 	DeregisterRenderItem(renderItem);
 	delete renderItem;
-
 }
 
 bool Particle::integrate(double t)

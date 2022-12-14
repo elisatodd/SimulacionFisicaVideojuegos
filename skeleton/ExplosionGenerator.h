@@ -6,7 +6,9 @@ class ExplosionGenerator : public ForceGenerator
 {
 public:
 	ExplosionGenerator(float radio, float intensidad, Vector3 centro) : 
-	_R(radio), _K(intensidad), _centre(centro), _const(0.0) {};
+		_R(radio), _K(intensidad), _centre(centro), _const(0.0) {
+		_name = "Explosion";
+	};
 
 	virtual void updateForce(Particle* p, double t);
 	virtual void updateForceRB(physx::PxRigidDynamic* rb, double t);

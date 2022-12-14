@@ -31,6 +31,8 @@
     <ClCompile Include="WorldManager.cpp" />
     <ClCompile Include="TorqueGenerator.cpp" />
     <ClCompile Include="RigidBodyForceRegistry.cpp" />
+    <ClCompile Include="UniformRigidBodyGenerator.cpp" />
+    <ClCompile Include="RigidBodyGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -63,6 +65,8 @@
     <ClInclude Include="WorldManager.h" />
     <ClInclude Include="TorqueGenerator.h" />
     <ClInclude Include="RigidBodyForceRegistry.h" />
+    <ClInclude Include="UniformRigidBodyGenerator.h" />
+    <ClInclude Include="RigidBodyGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

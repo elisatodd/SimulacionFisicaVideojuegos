@@ -1,11 +1,12 @@
 #include "WorldManager.h"
-
+#include "RigidBodyGenerator.h"
+#include "UniformRigidBodyGenerator.h"
 WorldManager::WorldManager(PxPhysics* gp, PxScene* s) : _gPhysics(gp), _gScene(s)
 {
 
 	_fr = new RigidBodyForceRegistry();
 	_torque = new TorqueGenerator(10, 100, {0, 0, 0});
-	_explosion = new ExplosionGenerator(50, 1000, {0, -1, 0});
+	_explosion = new ExplosionGenerator(30, 40, {0, 0, 0});
 }
 
 WorldManager::~WorldManager()
@@ -39,20 +40,23 @@ void WorldManager::createBaseScene()
 void WorldManager::addRigidDynamic()
 {
 	PxRigidDynamic* new_solid;
-	Vector3 size = { 5.0, 5.0, 5.0 };
+	Vector3 size = { 2.0, 2.0, 2.0 };
 
-	new_solid = _gPhysics->createRigidDynamic(PxTransform({0, 10, 0}));
+	PxQuat q = { 45, PxVec3 {0, 1, 0} }; // 45 grados girado en Y
+	PxQuat q2 = { 10, PxVec3 {1, 0, 0} }; // 10 grados girado en X
+	new_solid = _gPhysics->createRigidDynamic(PxTransform({0, 10, 0}, q*q2)); // añadir quaternion para generar con giro
 
 	new_solid->setLinearVelocity({0.0, 10.0,0.0}); // velocidad inicial
 	new_solid->setAngularVelocity({0.0, 0.0, 0.0}); // velocidad de giro
 
 	auto shape = CreateShape(PxBoxGeometry(size));
+	//auto shape = CreateShape(PxSphereGeometry(2.0));
 	new_solid->attachShape(*shape);
 
 	new_solid->setMassSpaceInertiaTensor({size.y * size.z, size.x * size.z, size.x * size.y}); // tensor de inercia, marca cómo gira el objeto al chocar
 
 	auto item = new RenderItem(shape, new_solid, {1.0, 0.0, 1.0, 1.0});
-	_items.push_back(item);
+	_items.push_back(item);	
 
 	_gScene->addActor(*new_solid);
 
@@ -64,4 +68,108 @@ void WorldManager::update(double t)
 {
 	_fr->updateForces(t);
 	_explosion->addConst(t);
+	if (_next_generation <= clock()) { // timer para que se generen las partículas cada X tiempo y no en cada update
+		//cout << clock() << "\n";
+		for (auto p : _rigidbodies_generators) {
+			if (p->getActive()) {
+				auto l = p->generateRB();
+				for (auto q : l) {
+					_items.push_back(q->item);
+				}
+			}
+		}
+		_next_generation += _generation_frequency;
+	}
+
+	//// RECORRER TODOS LOS ACTORES
+	//PxActorTypeFlags desiredTypes = PxActorTypeFlag::eRIGID_DYNAMIC; // | PxActorTypeFlag::eRIGID_STATIC; --> concatenar así 
+	//PxU32 count = _gScene->getNbActors(desiredTypes);
+	//PxActor** buffer = new PxActor * [count];
+	//auto actors = _gScene->getActors(desiredTypes, buffer, count);
+
+	//for (int i = 0; i < count; i++) // para cada partícula activa
+	//{
+	//	// if (buffer[i]->getOwnerClient() == PX_DEFAULT_CLIENT)   //skip actors owned by foreign clients
+
+	//	if (buffer[i]) {
+	//		// procesado
+	//	}
+	//}
+	//delete buffer;
+
+	auto rb = _rigid_statics.begin();
+	while (rb != _rigid_statics.end()) {
+		if (clock() >= (*rb)->deathTime) { // si se alcanza el momento en que deben destruirse
+			deleteItem((*rb)->item);
+			deleteActor((*rb)->actor);
+			PxRigidDynamic* pr = (PxRigidDynamic*)((*rb)->actor);
+			_fr->deleteParticleRegistry(pr);
+			delete* rb;
+			rb = _rigid_statics.erase(rb);
+		}
+		else
+			rb++;
+	}
+
+}
+
+void WorldManager::addRBGenerator()
+{
+	PxRigidDynamic* new_solid;
+	Vector3 size = { 2.0, 2.0, 2.0 };
+
+	PxQuat q = { 45, PxVec3 {0, 1, 0} }; // 45 grados girado en Y
+	PxQuat q2 = { 10, PxVec3 {1, 0, 0} }; // 10 grados girado en X
+	new_solid = _gPhysics->createRigidDynamic(PxTransform({ 0, 30, 0 }, q * q2)); // añadir quaternion para generar con giro
+
+	new_solid->setLinearVelocity({ 0.0, 10.0,0.0 }); // velocidad inicial
+	new_solid->setAngularVelocity({ 0.0, 0.0, 0.0 }); // velocidad de giro
+
+	//auto shape = CreateShape(PxBoxGeometry(size));
+	auto shape = CreateShape(PxSphereGeometry(2.0));
+	new_solid->attachShape(*shape);
+
+	new_solid->setMassSpaceInertiaTensor({ size.y * size.z, size.x * size.z, size.x * size.y }); // tensor de inercia, marca cómo gira el objeto al chocar
+
+	auto item = new RenderItem(shape, new_solid, { 1.0, 0.0, 1.0, 1.0 });
+
+	_items.push_back(item);
+
+	_gScene->addActor(*new_solid);
+
+	RigidStatic* rs = new RigidStatic();
+	rs->item = item;
+	rs->lifeSpan = MAXINT; // este actor debe estar siempre pues es la base de clonación
+	rs->deathTime = clock() + rs->lifeSpan;
+	rs->actualLife = clock();
+	rs->actor = new_solid;
+
+	_fr->addRegistry(_explosion, new_solid);
+	rs->forces.push_back("Explosion");
+
+	_rigid_statics.push_back(rs);
+
+	auto gen = new UniformRigidBodyGenerator("Boxes", { 0.0, 10.0, 0.0 }, { 1.0, 1.0, 1.0 }, 1.0, 1, rs, { 5.0, 5.0, 5.0 }, {20.0, 20.0, 20.0}, this);
+	_rigidbodies_generators.push_back(gen);
+}
+
+void WorldManager::deleteItem(RenderItem* i)
+{
+	bool found = false;
+	auto it = _items.begin();
+	while (!found && it != _items.end()) {
+		if ((*it) == i) {
+			found = true;
+			DeregisterRenderItem(*it);
+			delete* it;
+			it = _items.erase(it);
+		}
+		else
+			it++;
+	}
+}
+
+void WorldManager::deleteActor(PxRigidActor* ac)
+{
+	_gScene->removeActor(*ac);
 }

@@ -311,6 +311,11 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		wM->changeExplosion();
 		break;
 	}
+	case 'R':
+	{
+		wM->addRBGenerator();
+		break;
+	}
 	default:
 		break;
 	}

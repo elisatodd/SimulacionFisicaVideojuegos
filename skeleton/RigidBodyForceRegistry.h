@@ -27,5 +27,18 @@ public:
 				it++;
 		}
 	}
+
+	ForceGenerator* getGenerator(std::string name) {
+		iterator it = begin();
+		while (it->first->_name != name) {
+			it++;
+		}
+		
+		if (it->first->_name == name) {
+			return it->first;
+		}
+		else
+			return nullptr;
+	}
 };
 

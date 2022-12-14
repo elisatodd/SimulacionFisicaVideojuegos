@@ -40,6 +40,9 @@ void ExplosionGenerator::updateForceRB(physx::PxRigidDynamic* rb, double t)
 	if (!_enabled)
 		return;
 
+	/*
+		OTRA FORMA DE CALCULAR LA EXPLOSIÓN
+	
 	const double euler = std::exp(1.0);
 	auto pos = rb->getGlobalPose().p;
 	auto difX = pos.x - _centre.x;
@@ -57,8 +60,29 @@ void ExplosionGenerator::updateForceRB(physx::PxRigidDynamic* rb, double t)
 	auto y = (_K / r2) * difY * pow(euler, (-t / _const));
 	auto z = (_K / r2) * difZ * pow(euler, (-t / _const));
 
-	Vector3 force(x, y, z);
+	Vector3 force(x, y, z);*/
 
+	auto pos = rb->getGlobalPose().p;
 
-	rb->addForce(force);
+	// distancia de la explosion
+	double r = sqrt(pow((pos.x - _centre.x), 2) + pow((pos.y - _centre.y), 2) + pow((pos.z - _centre.z), 2));
+	Vector3 forceDir = { 0, 0, 0 };
+
+	if (r < _R) {
+		double first = _K / pow(r, 2);
+		double power = -(t / _const);
+		double second = pow(e, power);
+
+		forceDir = first * Vector3(pos.x - _centre.x, pos.y - _centre.y, pos.z - _centre.z) * second;
+	}
+
+	Vector3 v = rb->getAngularVelocity() - forceDir;
+	float coef = v.normalize();
+	Vector3 expForce;
+	coef = (_K * coef) + _K * coef * coef;
+	expForce = -v * coef;
+
+	std::cout << "Explosion force: " << expForce.x << "\t" << expForce.y << "\t" << expForce.z << "\n";
+
+	rb->addForce(expForce);
 }

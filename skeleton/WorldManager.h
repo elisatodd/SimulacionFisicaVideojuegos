@@ -46,8 +46,8 @@ public:
 		newRS->deathTime = clock() + newRS->lifeSpan; 
 		newRS->actualLife = clock();
 
-		auto pos = rs->item->actor->getGlobalPose();
-		auto new_solid = _gPhysics->createRigidDynamic(pos);
+		//auto pos = rs->item->actor->getGlobalPose();
+		auto new_solid = _gPhysics->createRigidDynamic({0,0,0});
 		newRS->actor = new_solid;
 		auto geo = rs->item->shape->getGeometryType();
 

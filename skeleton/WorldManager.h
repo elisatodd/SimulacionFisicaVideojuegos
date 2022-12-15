@@ -15,7 +15,7 @@ class RigidBodyGenerator;
 
 using namespace physx;
 
-struct RigidStatic {
+struct RigidBody {
 
 	PxRigidActor* actor;
 	RenderItem* item;
@@ -40,8 +40,8 @@ public:
 	inline void changeTorque() { _torque->changeState(); };
 	inline void changeExplosion() { _explosion->changeState(); _explosion_active = true; };
 
-	RigidStatic* clone(RigidStatic* rs) {
-		RigidStatic* newRS = new RigidStatic();
+	RigidBody* clone(RigidBody* rs) {
+		RigidBody* newRS = new RigidBody();
 		newRS->lifeSpan = 1000; // 1 segundos de vida a partir del momento actual;
 		newRS->deathTime = clock() + newRS->lifeSpan; 
 		newRS->actualLife = clock();
@@ -95,7 +95,7 @@ public:
 protected:
 	// lista de items de sólidos rígidos
 	std::list<RenderItem*> _items;
-	std::list<RigidStatic*> _rigid_statics;
+	std::list<RigidBody*> _rigid_statics;
 
 	PxPhysics* _gPhysics;
 	PxScene* _gScene;

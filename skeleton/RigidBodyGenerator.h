@@ -16,12 +16,12 @@ class RigidBodyGenerator
 {
 public:
 
-	RigidBodyGenerator(string name, Vector3 mPos, Vector3 mVel, double genProb, int numPart, RigidStatic* rb, WorldManager* wm); // actor -> could be dynamic or static
+	RigidBodyGenerator(string name, Vector3 mPos, Vector3 mVel, double genProb, int numPart, RigidBody* rb, WorldManager* wm); // actor -> could be dynamic or static
 	~RigidBodyGenerator();
 
-	void setRigidBody(RigidStatic* rb);
+	void setRigidBody(RigidBody* rb);
 
-	virtual std::list<RigidStatic*> generateRB() = 0;
+	virtual std::list<RigidBody*> generateRB() = 0;
 
 	std::string getGenName() { return _name; }
 
@@ -39,7 +39,7 @@ protected:
 	Vector3 _mean_pos, _mean_vel;
 	double _generation_probability;
 	int _num_rigid_bodies;
-	RigidStatic* _model;
+	RigidBody* _model;
 	WorldManager* _wm;
 
 	bool _active; // indica si está activo en la escena -> generando RB constantemente

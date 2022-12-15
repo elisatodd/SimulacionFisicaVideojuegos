@@ -1,9 +1,9 @@
 #include "UniformRigidBodyGenerator.h"
 #include <random>
 
-list<RigidStatic*> UniformRigidBodyGenerator::generateRB()
+list<RigidBody*> UniformRigidBodyGenerator::generateRB()
 {
-    std::list<RigidStatic*> generations = list<RigidStatic*>();
+    std::list<RigidBody*> generations = list<RigidBody*>();
 
     std::random_device rd;  // Will be used to obtain a seed for the random number engine
     std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()

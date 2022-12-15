@@ -11,12 +11,12 @@ class UniformRigidBodyGenerator : public RigidBodyGenerator
 {
 public:
 
-	UniformRigidBodyGenerator(std::string name, Vector3 mPos, Vector3 mVel, double genProb, int numPart, RigidStatic* rb, Vector3 vel, Vector3 pos, WorldManager* wm) :
+	UniformRigidBodyGenerator(std::string name, Vector3 mPos, Vector3 mVel, double genProb, int numPart, RigidBody* rb, Vector3 vel, Vector3 pos, WorldManager* wm) :
 		RigidBodyGenerator(name, mPos, mVel, genProb, numPart, rb, wm), _vel_width(vel), _pos_width(pos) {
 		_active = true;
 	};
 
-	virtual std::list<RigidStatic*> generateRB() override;
+	virtual std::list<RigidBody*> generateRB() override;
 
 
 private:

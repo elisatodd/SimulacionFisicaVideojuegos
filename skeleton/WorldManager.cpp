@@ -142,7 +142,7 @@ void WorldManager::addRBGenerator()
 
 	_gScene->addActor(*new_solid);
 
-	RigidStatic* rs = new RigidStatic();
+	RigidBody* rs = new RigidBody();
 	rs->item = item;
 	rs->lifeSpan = MAXINT; // este actor debe estar siempre pues es la base de clonación
 	rs->deathTime = clock() + rs->lifeSpan;

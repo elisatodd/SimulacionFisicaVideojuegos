@@ -40,11 +40,11 @@ void WorldManager::createBaseScene()
 void WorldManager::addRigidDynamic()
 {
 	PxRigidDynamic* new_solid;
-	Vector3 size = { 2.0, 2.0, 2.0 };
+	Vector3 size = { 7.0, 7.0, 7.0 };
 
 	PxQuat q = { 45, PxVec3 {0, 1, 0} }; // 45 grados girado en Y
 	PxQuat q2 = { 10, PxVec3 {1, 0, 0} }; // 10 grados girado en X
-	new_solid = _gPhysics->createRigidDynamic(PxTransform({0, 10, 0}, q*q2)); // añadir quaternion para generar con giro
+	new_solid = _gPhysics->createRigidDynamic(PxTransform({0, 30, 0}, q*q2)); // añadir quaternion para generar con giro
 
 	new_solid->setLinearVelocity({0.0, 10.0,0.0}); // velocidad inicial
 	new_solid->setAngularVelocity({0.0, 0.0, 0.0}); // velocidad de giro
@@ -54,6 +54,8 @@ void WorldManager::addRigidDynamic()
 	new_solid->attachShape(*shape);
 
 	new_solid->setMassSpaceInertiaTensor({size.y * size.z, size.x * size.z, size.x * size.y}); // tensor de inercia, marca cómo gira el objeto al chocar
+
+//	new_solid->setMass(1.0);
 
 	auto item = new RenderItem(shape, new_solid, {1.0, 0.0, 1.0, 1.0});
 	_items.push_back(item);	
@@ -67,7 +69,10 @@ void WorldManager::addRigidDynamic()
 void WorldManager::update(double t)
 {
 	_fr->updateForces(t);
-	_explosion->addConst(t);
+
+	if (_explosion_active)
+		_explosion->addConst(t);
+	
 	if (_next_generation <= clock()) { // timer para que se generen las partículas cada X tiempo y no en cada update
 		//cout << clock() << "\n";
 		for (auto p : _rigidbodies_generators) {

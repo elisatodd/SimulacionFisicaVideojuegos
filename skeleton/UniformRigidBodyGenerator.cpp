@@ -32,8 +32,7 @@ list<RigidStatic*> UniformRigidBodyGenerator::generateRB()
             trans.p = PxVec3((float)std_dis_posX(gen), (float)std_dis_posY(gen), (float)std_dis_posZ(gen));
             trans.q = PxQuat((float)std_dis_rotX(gen), {1,0,0}) * PxQuat((float)std_dis_rotY(gen), { 0,1,0 }) * PxQuat((float)std_dis_rotZ(gen), { 0,0,1 });
             actor->setGlobalPose(trans);
-            actor->setLinearVelocity({0.0, 0.0, 0.0});
-
+            actor->setLinearVelocity({ (float)std_dis_velX(gen), (float)std_dis_velY(gen), (float)std_dis_velZ(gen)});
             generations.push_back(rb); // new particle
         }
     }

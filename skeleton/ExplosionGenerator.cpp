@@ -77,12 +77,13 @@ void ExplosionGenerator::updateForceRB(physx::PxRigidDynamic* rb, double t)
 	}
 
 	Vector3 v = rb->getAngularVelocity() - forceDir;
+//	Vector3 v = rb->getLinearVelocity() - forceDir;
 	float coef = v.normalize();
 	Vector3 expForce;
 	coef = (_K * coef) + _K * coef * coef;
 	expForce = -v * coef;
 
-	std::cout << "Explosion force: " << expForce.x << "\t" << expForce.y << "\t" << expForce.z << "\n";
+//	std::cout << "Explosion force: " << expForce.x << "\t" << expForce.y << "\t" << expForce.z << "\n";
 
 	rb->addForce(expForce);
 }

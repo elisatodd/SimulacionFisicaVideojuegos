@@ -38,7 +38,7 @@ public:
 	void update(double t);
 
 	inline void changeTorque() { _torque->changeState(); };
-	inline void changeExplosion() { _explosion->changeState(); };
+	inline void changeExplosion() { _explosion->changeState(); _explosion_active = true; };
 
 	RigidStatic* clone(RigidStatic* rs) {
 		RigidStatic* newRS = new RigidStatic();
@@ -104,10 +104,11 @@ protected:
 	RigidBodyForceRegistry* _fr;
 	TorqueGenerator* _torque;
 	ExplosionGenerator* _explosion;
+	bool _explosion_active = false;
 
 	// Generadores de partículas
 	std::list<RigidBodyGenerator*> _rigidbodies_generators;
-	float _generation_frequency = 50.0;
+	float _generation_frequency = 20.0; // 100.0 == 1 segundo
 	float _next_generation = 0.0;
 	float _current_time = 0.0;
 

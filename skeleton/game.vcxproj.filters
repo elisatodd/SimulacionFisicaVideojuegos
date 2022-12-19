@@ -33,6 +33,7 @@
     <ClCompile Include="RigidBodyForceRegistry.cpp" />
     <ClCompile Include="UniformRigidBodyGenerator.cpp" />
     <ClCompile Include="RigidBodyGenerator.cpp" />
+    <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core.hpp" />
@@ -67,6 +68,7 @@
     <ClInclude Include="RigidBodyForceRegistry.h" />
     <ClInclude Include="UniformRigidBodyGenerator.h" />
     <ClInclude Include="RigidBodyGenerator.h" />
+    <ClInclude Include="Player.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

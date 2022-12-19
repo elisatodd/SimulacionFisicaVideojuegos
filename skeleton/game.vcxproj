@@ -265,6 +265,7 @@
     <ClCompile Include="ParticleForceRegistry.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Proyectile.cpp" />
     <ClCompile Include="RenderUtils.cpp" />
     <ClCompile Include="Render\Camera.cpp" />
@@ -293,6 +294,7 @@
     <ClInclude Include="ParticleForceRegistry.h" />
     <ClInclude Include="ParticleGenerator.h" />
     <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Proyectile.h" />
     <ClInclude Include="callbacks.hpp" />
     <ClInclude Include="core.hpp" />

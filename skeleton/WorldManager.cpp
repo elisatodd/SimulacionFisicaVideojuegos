@@ -17,23 +17,26 @@ WorldManager::~WorldManager()
 	}
 }
 
+
 void WorldManager::createBaseScene()
 {
 	// Plane as a solid rigid
-	PxRigidStatic* Suelo = _gPhysics->createRigidStatic(PxTransform({ 0,0,0 }));
+	PxRigidStatic* Suelo = _gPhysics->createRigidStatic(PxTransform({ 0,-10,0 }));
 	PxShape* shape = CreateShape(PxBoxGeometry(100, 0.1, 100));
 	Suelo->attachShape(*shape);
 	auto _item_suelo = new RenderItem(shape, Suelo, {0.8, 0.8, 0.8, 1});
 	_gScene->addActor(*Suelo);
 	_items.push_back(_item_suelo);
 
-	// Wall
-	PxRigidStatic* Pared = _gPhysics->createRigidStatic(PxTransform({ 10,10,-30 }));
-	PxShape* shape_pared = CreateShape(PxBoxGeometry(40, 20, 5));
-	Pared->attachShape(*shape_pared);
-	auto _item_pared = new RenderItem(shape_pared, Pared, { 0.8, 0.8, 0.8, 1 });
-	_gScene->addActor(*Pared);
-	_items.push_back(_item_pared);
+	//// Wall
+	//PxRigidStatic* Pared = _gPhysics->createRigidStatic(PxTransform({ 10,10,-30 }));
+	//PxShape* shape_pared = CreateShape(PxBoxGeometry(40, 20, 5));
+	//Pared->attachShape(*shape_pared);
+	//auto _item_pared = new RenderItem(shape_pared, Pared, { 0.8, 0.8, 0.8, 1 });
+	//_gScene->addActor(*Pared);
+	//_items.push_back(_item_pared);
+
+
 
 }
 

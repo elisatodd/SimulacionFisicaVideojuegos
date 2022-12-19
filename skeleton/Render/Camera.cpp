@@ -37,13 +37,22 @@ using namespace physx;
 
 namespace Snippets
 {
-
 Camera::Camera(const PxVec3& eye, const PxVec3& dir)
 {
 	mEye = eye;
 	mDir = dir.getNormalized();
 	mMouseX = 0;
 	mMouseY = 0;
+}
+
+Camera::Camera(const PxVec3& eye, const PxVec3& dir, bool mov)
+{
+	mEye = eye;
+	mDir = dir.getNormalized();
+	mMouseX = 0;
+	mMouseY = 0;
+
+	moving = mov;
 }
 
 void Camera::handleMouse(int button, int state, int x, int y)
@@ -56,6 +65,9 @@ void Camera::handleMouse(int button, int state, int x, int y)
 
 bool Camera::handleKey(unsigned char key, int x, int y, float speed)
 {
+	if (moving)
+		return false;
+
 	PX_UNUSED(x);
 	PX_UNUSED(y);
 
@@ -112,9 +124,19 @@ PxVec3 Camera::getEye() const
 	return mEye; 
 }
 
+void Camera::setEye(physx::PxVec3 e)
+{
+	mEye = e;
+}
+
 PxVec3 Camera::getDir() const
 { 
 	return mDir; 
+}
+
+void Camera::setDir(physx::PxVec3 d)
+{
+	mDir = d;
 }
 
 

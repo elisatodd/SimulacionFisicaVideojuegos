@@ -15,18 +15,20 @@ Player::Player(PxPhysics* gp, PxScene* s)
 	PxRigidDynamic* new_solid;
 	float size = 5.0;
 
-	new_solid = _gPhysics->createRigidDynamic(PxTransform({ 0, 0, 0 }));
+	new_solid = _gPhysics->createRigidDynamic(PxTransform({ 0, -10, 0 }));
 
 	new_solid->setLinearVelocity({ 0.0, 0.0,0.0 }); // velocidad inicial
 	new_solid->setAngularVelocity({ 0.0, 0.0, 0.0 }); // velocidad de giro
 
-	auto shape = CreateShape(PxSphereGeometry(size));
+	PxMaterial* mat = _gPhysics->createMaterial(1.0f, 1.0f, 0.0f);
+	auto shape = CreateShape(PxSphereGeometry(size), mat);
 	new_solid->attachShape(*shape);
 
 	new_solid->setMassSpaceInertiaTensor({ size * size, size * size, size * size }); // tensor de inercia, marca cómo gira el objeto al chocar
 
 	_render_item = new RenderItem(shape, new_solid, { 0.5, 1.0, 1.0, 1.0 });
 
+	new_solid->setName("Player");
 	_gScene->addActor(*new_solid);
 
 	// orientación empieza hacia arriba
@@ -62,7 +64,7 @@ void Player::update(double t)
 			for (auto p : _upg->generateParticles()) {
 				_particles.push_back(p);
 				_pfr->addRegistry(_gfg, p);
-				p->setRemainingTime(1000.0); // se muestran durante 1 segundo -> ignorar el tiempo de la distribución
+				p->setRemainingTime(100.0); // se muestran durante 1 segundo -> ignorar el tiempo de la distribución
 			}
 			_next_generation += _generation_frequency;	
 		}
@@ -72,6 +74,11 @@ void Player::update(double t)
 		for (auto pa : _particles) {
 			pa->integrate(t);
 		}
+	}else if (_onPlatform) {
+		PxRigidDynamic* player = (PxRigidDynamic*)_render_item->actor;
+		player->setLinearVelocity({ 0.0, 0.0, 0.0 });
+		player->setAngularVelocity({ 0.0, 0.0, 0.0 });
+		_onPlatform = false;
 	}
 
 	// elimina las partículas muertas
@@ -102,6 +109,10 @@ void Player::jump()
 			(*p)->setAlive(false);
 			p++;
 		}
+
+		// restablece la potencia y la trauectoria
+		_orientation = { 0, 1, 0 };
+		_jump_power = 40.0f;
 	}
 	_preparing_jump = !_preparing_jump;
 }
@@ -109,6 +120,27 @@ void Player::jump()
 void Player::changeOrientation(float dir)
 {
 	// dir = 1 if ->
+	// 
 	// dir = -1 if <-
-	_orientation.x += dir * 0.1;
+	if (_preparing_jump)
+		_orientation.x += dir * 0.1;
+}
+
+void Player::setOnPlatform(bool a)
+{
+	_onPlatform = true;
+}
+
+void Player::cancelJump()
+{
+	if (_preparing_jump) {
+		_preparing_jump = false;
+
+		// elimina las particulas de la trayectoria
+		auto p = _particles.begin();
+		while (p != _particles.end()) {
+			(*p)->setAlive(false);
+			p++;
+		}
+	}
 }

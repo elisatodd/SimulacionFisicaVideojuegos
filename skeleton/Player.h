@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include <PxScene.h>
 #include <PxPhysics.h>
 #include <list>
@@ -27,17 +26,22 @@ public:
 
 	void jump();
 	void changeOrientation(float dir);
+	void setOnPlatform(bool a);
 
+	void cancelJump();
+
+	RenderItem* getItem() { return _render_item; };
 private:
 	PxPhysics* _gPhysics;
 	PxScene* _gScene;
 
 	Vector3 _orientation = {0, 1, 0}; // hacia donde saltará la partícula
-	float _jump_power = 20.0f; // potencia del salto
+	float _jump_power = 40.0f; // potencia del salto
 
 	RenderItem* _render_item;
 
 	bool _preparing_jump = false;
+	bool _onPlatform = false;
 	float _next_generation = 0.0;
 	float _generation_frequency = 300.0; // 1000.0 == 1 segundo
 

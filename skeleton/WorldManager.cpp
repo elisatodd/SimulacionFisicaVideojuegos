@@ -1,9 +1,23 @@
 #include "WorldManager.h"
 #include "RigidBodyGenerator.h"
 #include "UniformRigidBodyGenerator.h"
+#include "PlayerPlatformCollision.h"
+#include "Player.h"
 WorldManager::WorldManager(PxPhysics* gp, PxScene* s) : _gPhysics(gp), _gScene(s)
 {
 
+	_fr = new RigidBodyForceRegistry();
+	_torque = new TorqueGenerator(10, 100, {0, 0, 0});
+	_explosion = new ExplosionGenerator(30, 40, {0, 0, 0});
+
+	// Create an instance of the collision callback class for the player and the platforms
+	PlayerPlatformCollision collisionCallback;
+	// Set the collision callback for the scene
+	//_gScene->setSimulationEventCallback(&collisionCallback);
+}
+
+WorldManager::WorldManager(PxPhysics* gp, PxScene* s, Player* p) : _gPhysics(gp), _gScene(s), _player(p)
+{
 	_fr = new RigidBodyForceRegistry();
 	_torque = new TorqueGenerator(10, 100, {0, 0, 0});
 	_explosion = new ExplosionGenerator(30, 40, {0, 0, 0});
@@ -27,6 +41,7 @@ void WorldManager::createBaseScene()
 	auto _item_suelo = new RenderItem(shape, Suelo, {0.8, 0.8, 0.8, 1});
 	_gScene->addActor(*Suelo);
 	_items.push_back(_item_suelo);
+	
 
 	//// Wall
 	//PxRigidStatic* Pared = _gPhysics->createRigidStatic(PxTransform({ 10,10,-30 }));
@@ -36,7 +51,15 @@ void WorldManager::createBaseScene()
 	//_gScene->addActor(*Pared);
 	//_items.push_back(_item_pared);
 
-
+	PxRigidStatic* Pared = _gPhysics->createRigidStatic(PxTransform({ 50, 30 , 0 }));
+	auto _plat_geo = PxBoxGeometry(20, 1, 20);
+	PxShape* shape_pared = CreateShape(_plat_geo);
+	Pared->attachShape(*shape_pared);
+	auto _item_pared = new RenderItem(shape_pared, Pared, { 0.09, 0.22, 0.84, 1 });
+	Pared->setName("Platform");
+	_gScene->addActor(*Pared);
+	_platforms.push_back(_item_pared);
+	_items.push_back(_item_pared);
 
 }
 
@@ -106,7 +129,7 @@ void WorldManager::update(double t)
 	//delete buffer;
 
 	auto rb = _rigid_statics.begin();
-	while (rb != _rigid_statics.end()) {
+	while (rb != _rigid_statics.end()) { 
 		if (clock() >= (*rb)->deathTime) { // si se alcanza el momento en que deben destruirse
 			deleteItem((*rb)->item);
 			deleteActor((*rb)->actor);
@@ -119,6 +142,18 @@ void WorldManager::update(double t)
 			rb++;
 	}
 
+	// COLISIÓN DE PLAYER Y PLATAFORMAS	
+	/*for (int i = 0; i < _platforms.size(); ++i) {
+		const PxTransform tPlayer = _player->getItem()->actor->getGlobalPose();
+		const PxTransform tPlat = _platforms[i]->actor->getGlobalPose();
+		bool collision = PxGeometryQuery::overlap(_platforms[i]->shape->getGeometry().box(), tPlat, 
+												  _player->getItem()->shape->getGeometry().sphere(), tPlayer);
+		//PxSweepHit hit;
+		//bool collision = PxGeometryQuery::sweep({10,10,10}, 100.0, _player->getGeometry(), tPlayer, _platforms_geo[i], tPlat, hit, PxHitFlag::eDEFAULT);
+		if (collision) {
+			cout << collision << endl;
+		}
+	}*/
 }
 
 void WorldManager::addRBGenerator()

@@ -69,6 +69,7 @@
     <ClInclude Include="UniformRigidBodyGenerator.h" />
     <ClInclude Include="RigidBodyGenerator.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerPlatformCollision.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Render">

@@ -12,6 +12,7 @@
 
 class UniformRigidBodyGenerator;
 class RigidBodyGenerator;
+class Player;
 
 using namespace physx;
 
@@ -30,6 +31,7 @@ class WorldManager
 public:
 
 	WorldManager(PxPhysics* gp, PxScene* s);
+	WorldManager(PxPhysics* gp, PxScene* s, Player* p);
 	~WorldManager();
 
 	void createBaseScene();
@@ -97,6 +99,9 @@ protected:
 	std::list<RenderItem*> _items;
 	std::list<RigidBody*> _rigid_statics;
 
+	// lista de las plataformas y sus geometrías
+	std::vector<RenderItem*> _platforms;
+
 	PxPhysics* _gPhysics;
 	PxScene* _gScene;
 
@@ -111,6 +116,8 @@ protected:
 	float _generation_frequency = 20.0; // 100.0 == 1 segundo
 	float _next_generation = 0.0;
 	float _current_time = 0.0;
+
+	Player* _player;
 
 };
 

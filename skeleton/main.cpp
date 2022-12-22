@@ -71,11 +71,12 @@ void initPhysics(bool interactive)
 
 	pSys = new ParticleSystem();
 	
-	wM = new WorldManager(gPhysics, gScene);
+	_player = new Player(gPhysics, gScene);
+
+	wM = new WorldManager(gPhysics, gScene, _player);
 	wM->createBaseScene();
 	//wM->addRigidDynamic();
 
-	_player = new Player(gPhysics, gScene);
 }
 
 
@@ -87,22 +88,15 @@ void stepPhysics(bool interactive, double t)
 	PX_UNUSED(interactive);
 
 	gScene->simulate(t);
-	gScene->fetchResults(true);
+	bool a = false;
+	a = gScene->fetchResults(true);
 
-	/*for (int i = 0; i < particles.size(); ++i) {
-		particles[i]->integrate(t);
-
-		if (particles[i]->getPose().p.x >= 250.0 || particles[i]->getPose().p.y >= 100.0) {
-			delete particles[i];
-		}
-	}*/
-
-	if (fromCamera) {
-		ParticleGenerator* g = pSys->getParticleGenerator(cameraGen);
-		
-		g->setMeanPos(GetCamera()->getEye() + GetCamera()->getDir() * 10);
-		g->setMeanVel(GetCamera()->getDir()*10);
-	}
+	//if (fromCamera) {
+	//	ParticleGenerator* g = pSys->getParticleGenerator(cameraGen);
+	//	
+	//	g->setMeanPos(GetCamera()->getEye() + GetCamera()->getDir() * 10);
+	//	g->setMeanVel(GetCamera()->getDir()*10);
+	//}
 	pSys->update(t);
 
 
@@ -131,7 +125,7 @@ void cleanupPhysics(bool interactive)
 	delete _player;
 	delete wM;
 }
-
+	
 // Function called when a key is pressed
 void keyPress(unsigned char key, const PxTransform& camera)
 {
@@ -139,9 +133,14 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	//cout << toupper(key) << endl;
 	switch(toupper(key))
 	{
-	case ' ': // espacio
+	case ' ': // espacio --> saltar
 	{
 		_player->jump();
+		break;
+	}
+	case 'Z': // cancelar salto
+	{
+		_player->cancelJump();
 		break;
 	}
 	case 'Q':
@@ -161,6 +160,12 @@ void keyPress(unsigned char key, const PxTransform& camera)
 
 void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
 {
+	if (actor1->getName() == "Player" && actor2->getName() == "Platform" || actor1->getName() == "Platform" && actor2->getName() == "Player") {
+		_player->setOnPlatform(true);
+		cout << "The player reached a platform!\n";
+
+	}
+
 	PX_UNUSED(actor1);
 	PX_UNUSED(actor2);
 }

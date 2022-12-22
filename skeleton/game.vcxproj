@@ -295,6 +295,7 @@
     <ClInclude Include="ParticleGenerator.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerPlatformCollision.h" />
     <ClInclude Include="Proyectile.h" />
     <ClInclude Include="callbacks.hpp" />
     <ClInclude Include="core.hpp" />

@@ -20,12 +20,14 @@ Player::Player(PxPhysics* gp, PxScene* s)
 	new_solid->setLinearVelocity({ 0.0, 0.0,0.0 }); // velocidad inicial
 	new_solid->setAngularVelocity({ 0.0, 0.0, 0.0 }); // velocidad de giro
 
-	PxMaterial* mat = _gPhysics->createMaterial(1.0f, 1.0f, 0.0f);
+	PxMaterial* mat = _gPhysics->createMaterial(1.0f, 1.0f, 1.0f);
 	auto shape = CreateShape(PxSphereGeometry(size), mat);
 	new_solid->attachShape(*shape);
 
-	new_solid->setMassSpaceInertiaTensor({ size * size, size * size, size * size }); // tensor de inercia, marca cómo gira el objeto al chocar
-
+	new_solid->setMassSpaceInertiaTensor({ size * size * size, size * size * size, size * size *size}); // tensor de inercia, marca cómo gira el objeto al chocar
+	new_solid->setAngularDamping(0.2);
+	new_solid->setLinearDamping(0.2);
+	new_solid->setMass(0.1);
 	_render_item = new RenderItem(shape, new_solid, { 0.5, 1.0, 1.0, 1.0 });
 
 	new_solid->setName("Player");
@@ -64,7 +66,7 @@ void Player::update(double t)
 			for (auto p : _upg->generateParticles()) {
 				_particles.push_back(p);
 				_pfr->addRegistry(_gfg, p);
-				p->setRemainingTime(100.0); // se muestran durante 1 segundo -> ignorar el tiempo de la distribución
+				p->setRemainingTime(2.0); // se muestran durante 1 segundo -> ignorar el tiempo de la distribución
 			}
 			_next_generation += _generation_frequency;	
 		}
@@ -74,13 +76,12 @@ void Player::update(double t)
 		for (auto pa : _particles) {
 			pa->integrate(t);
 		}
-	}else if (_onPlatform) {
+	}else if (_onPlatform && !_jumping) {
 		PxRigidDynamic* player = (PxRigidDynamic*)_render_item->actor;
 		player->setLinearVelocity({ 0.0, 0.0, 0.0 });
 		player->setAngularVelocity({ 0.0, 0.0, 0.0 });
 		_onPlatform = false;
 	}
-
 	// elimina las partículas muertas
 	auto p = _particles.begin();
 	while (p != _particles.end()) {
@@ -113,6 +114,11 @@ void Player::jump()
 		// restablece la potencia y la trauectoria
 		_orientation = { 0, 1, 0 };
 		_jump_power = 40.0f;
+
+		_jumping = true;
+	}
+	else {
+		_jumping = false;
 	}
 	_preparing_jump = !_preparing_jump;
 }
@@ -128,7 +134,12 @@ void Player::changeOrientation(float dir)
 
 void Player::setOnPlatform(bool a)
 {
-	_onPlatform = true;
+	_onPlatform = a;
+}
+
+void Player::setJumping(bool a)
+{
+	_jumping = a;
 }
 
 void Player::cancelJump()

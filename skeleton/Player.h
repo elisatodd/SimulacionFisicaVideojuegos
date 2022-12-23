@@ -27,6 +27,9 @@ public:
 	void jump();
 	void changeOrientation(float dir);
 	void setOnPlatform(bool a);
+	void setJumping(bool a);
+	inline bool onPlatform() { return _onPlatform; };
+	inline bool isJumping() { return _jumping; };
 
 	void cancelJump();
 
@@ -42,6 +45,7 @@ private:
 
 	bool _preparing_jump = false;
 	bool _onPlatform = false;
+	bool _jumping = false;;
 	float _next_generation = 0.0;
 	float _generation_frequency = 300.0; // 1000.0 == 1 segundo
 

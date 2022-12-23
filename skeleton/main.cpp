@@ -99,9 +99,13 @@ void stepPhysics(bool interactive, double t)
 	//}
 	pSys->update(t);
 
-
 	wM->update(t);
 	_player->update(t);
+
+	auto cam = GetCamera();
+	//cam->setDir(cam->getDir().cross(PxVec3(0, 1, 0)).getNormalized());
+	auto playerTr = _player->getItem()->actor->getGlobalPose();
+	cam->setEye({playerTr.p.x, playerTr.p.y, playerTr.p.z + 100});
 }
 
 // Function to clean data
@@ -161,10 +165,14 @@ void keyPress(unsigned char key, const PxTransform& camera)
 void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
 {
 	if (actor1->getName() == "Player" && actor2->getName() == "Platform" || actor1->getName() == "Platform" && actor2->getName() == "Player") {
+		//if (!_player->onPlatform()) {
+		//	_player->setOnPlatform(true);
+		//	_player->setJumping(false);
+		//}
 		_player->setOnPlatform(true);
-		cout << "The player reached a platform!\n";
-
+	//	cout << "The player reached a platform!\n";
 	}
+
 
 	PX_UNUSED(actor1);
 	PX_UNUSED(actor2);

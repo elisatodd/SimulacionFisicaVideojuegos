@@ -97,15 +97,15 @@ void stepPhysics(bool interactive, double t)
 	//	g->setMeanPos(GetCamera()->getEye() + GetCamera()->getDir() * 10);
 	//	g->setMeanVel(GetCamera()->getDir()*10);
 	//}
+
 	pSys->update(t);
 
 	wM->update(t);
 	_player->update(t);
 
 	auto cam = GetCamera();
-	//cam->setDir(cam->getDir().cross(PxVec3(0, 1, 0)).getNormalized());
 	auto playerTr = _player->getItem()->actor->getGlobalPose();
-	cam->setEye({playerTr.p.x, playerTr.p.y, playerTr.p.z + 100});
+	//cam->setEye({playerTr.p.x, playerTr.p.y, playerTr.p.z + 100});
 }
 
 // Function to clean data

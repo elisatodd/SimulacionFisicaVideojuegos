@@ -3,6 +3,7 @@
 #include "UniformRigidBodyGenerator.h"
 #include "PlayerPlatformCollision.h"
 #include "Player.h"
+
 WorldManager::WorldManager(PxPhysics* gp, PxScene* s) : _gPhysics(gp), _gScene(s)
 {
 
@@ -21,6 +22,14 @@ WorldManager::WorldManager(PxPhysics* gp, PxScene* s, Player* p) : _gPhysics(gp)
 	_fr = new RigidBodyForceRegistry();
 	_torque = new TorqueGenerator(10, 100, {0, 0, 0});
 	_explosion = new ExplosionGenerator(30, 40, {0, 0, 0});
+
+
+	Particle* water = new Particle(ParticleTypes::WaterT, 200.0, { 0, -50 , 0 });
+	// Si la masa supera el volumen, el objeto se hunde!
+	_buoyancy = new BuoyancyForceGenerator(5, (4/3) * 3.14 * pow(2.5,3), 997, water); // altura de player, volumen de player, densidad del agua
+
+	PxRigidDynamic* pAc = (PxRigidDynamic*)_player->getItem()->actor;
+	_fr->addRegistry(_buoyancy, pAc);
 }
 
 WorldManager::~WorldManager()
@@ -35,31 +44,44 @@ WorldManager::~WorldManager()
 void WorldManager::createBaseScene()
 {
 	// Plane as a solid rigid
-	PxRigidStatic* Suelo = _gPhysics->createRigidStatic(PxTransform({ 0,-10,0 }));
-	PxShape* shape = CreateShape(PxBoxGeometry(100, 0.1, 100));
+	/*PxRigidStatic* Suelo = _gPhysics->createRigidStatic(PxTransform({ 0,-10,0 }));
+	PxShape* shape = CreateShape(PxBoxGeometry(30, 5, 30));
 	Suelo->attachShape(*shape);
-	auto _item_suelo = new RenderItem(shape, Suelo, {0.8, 0.8, 0.8, 1});
+	auto _item_suelo = new RenderItem(shape, Suelo, {0.7, 0.4, 1.0, 1});
 	_gScene->addActor(*Suelo);
-	_items.push_back(_item_suelo);
-	
+	_items.push_back(_item_suelo);*/
 
-	//// Wall
-	//PxRigidStatic* Pared = _gPhysics->createRigidStatic(PxTransform({ 10,10,-30 }));
-	//PxShape* shape_pared = CreateShape(PxBoxGeometry(40, 20, 5));
-	//Pared->attachShape(*shape_pared);
-	//auto _item_pared = new RenderItem(shape_pared, Pared, { 0.8, 0.8, 0.8, 1 });
-	//_gScene->addActor(*Pared);
-	//_items.push_back(_item_pared);
-
-	PxRigidStatic* Pared = _gPhysics->createRigidStatic(PxTransform({ 50, 30 , 0 }));
+	PxRigidStatic* Plat = _gPhysics->createRigidStatic(PxTransform({ 50, 30 , 0 }));
 	auto _plat_geo = PxBoxGeometry(20, 1, 20);
-	PxShape* shape_pared = CreateShape(_plat_geo);
-	Pared->attachShape(*shape_pared);
-	auto _item_pared = new RenderItem(shape_pared, Pared, { 0.09, 0.22, 0.84, 1 });
-	Pared->setName("Platform");
-	_gScene->addActor(*Pared);
+	PxShape* shape_plat = CreateShape(_plat_geo);
+	Plat->attachShape(*shape_plat);
+	auto _item_pared = new RenderItem(shape_plat, Plat, { 1.0, 0.22, 0.84, 1 });
+	Plat->setName("Platform");
+	_gScene->addActor(*Plat);
 	_platforms.push_back(_item_pared);
 	_items.push_back(_item_pared);
+
+	PxRigidStatic* Plat2 = _gPhysics->createRigidStatic(PxTransform({ -50, 60 , 0 }));
+	auto _plat_geo2 = PxBoxGeometry(20, 1, 20);
+	PxShape* shape_plat2 = CreateShape(_plat_geo2);
+	Plat2->attachShape(*shape_plat2);
+	auto _item_pared2 = new RenderItem(shape_plat2, Plat2, { 1.0, 0.22, 0.84, 1 });
+	Plat2->setName("Platform");
+	_gScene->addActor(*Plat2);
+	_platforms.push_back(_item_pared2);
+	_items.push_back(_item_pared2);
+
+	//PxRigidStatic* Water = _gPhysics->createRigidStatic(PxTransform({ 0, -50 , 0 }));
+	//auto _water_geo = PxBoxGeometry(200, 10, 200);
+	//PxShape* shape_water = CreateShape(_water_geo);
+	//Water->attachShape(*shape_water);
+	//auto _item_water = new RenderItem(shape_water, Water, { 0.0, 0.1, 0.5, 1 });
+	//Water->setName("Water");
+	//_gScene->addActor(*Water);
+	//_items.push_back(_item_water);
+
+
+
 
 }
 

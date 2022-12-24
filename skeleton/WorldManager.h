@@ -8,6 +8,7 @@
 #include "RigidBodyForceRegistry.h"
 #include "TorqueGenerator.h"
 #include "ExplosionGenerator.h"
+#include "BuoyancyForceGenerator.h"
 #include "RenderUtils.hpp"
 
 class UniformRigidBodyGenerator;
@@ -109,6 +110,7 @@ protected:
 	RigidBodyForceRegistry* _fr;
 	TorqueGenerator* _torque;
 	ExplosionGenerator* _explosion;
+	BuoyancyForceGenerator* _buoyancy;
 	bool _explosion_active = false;
 
 	// Generadores de partículas

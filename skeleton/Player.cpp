@@ -20,14 +20,14 @@ Player::Player(PxPhysics* gp, PxScene* s)
 	new_solid->setLinearVelocity({ 0.0, 0.0,0.0 }); // velocidad inicial
 	new_solid->setAngularVelocity({ 0.0, 0.0, 0.0 }); // velocidad de giro
 
-	PxMaterial* mat = _gPhysics->createMaterial(1.0f, 1.0f, 1.0f);
+	PxMaterial* mat = _gPhysics->createMaterial(1.0f, 1.0f, 0.0f);
 	auto shape = CreateShape(PxSphereGeometry(size), mat);
 	new_solid->attachShape(*shape);
 
 	new_solid->setMassSpaceInertiaTensor({ size * size * size, size * size * size, size * size *size}); // tensor de inercia, marca cómo gira el objeto al chocar
 	new_solid->setAngularDamping(0.2);
 	new_solid->setLinearDamping(0.2);
-	new_solid->setMass(0.1);
+	new_solid->setMass(1000);
 	_render_item = new RenderItem(shape, new_solid, { 0.5, 1.0, 1.0, 1.0 });
 
 	new_solid->setName("Player");
@@ -66,7 +66,7 @@ void Player::update(double t)
 			for (auto p : _upg->generateParticles()) {
 				_particles.push_back(p);
 				_pfr->addRegistry(_gfg, p);
-				p->setRemainingTime(2.0); // se muestran durante 1 segundo -> ignorar el tiempo de la distribución
+				p->setRemainingTime(4.0); // se muestran durante 1 segundo -> ignorar el tiempo de la distribución
 			}
 			_next_generation += _generation_frequency;	
 		}

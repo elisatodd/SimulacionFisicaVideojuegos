@@ -8,6 +8,7 @@ public:
 	BuoyancyForceGenerator(float h, float V, float d, Particle* lp);
 
 	void updateForce(Particle* p, double t);
+	virtual void updateForceRB(physx::PxRigidDynamic* rb, double t);
 
 	inline void setVolume(float v) { _volume = v; };
 	inline float getVolume() { return _volume; };

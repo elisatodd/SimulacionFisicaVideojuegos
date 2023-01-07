@@ -39,9 +39,9 @@ private:
 	PxScene* _gScene;
 
 	Vector3 _orientation = {0, 1, 0}; // hacia donde saltará la partícula
-	float _jump_power = 40.0f; // potencia del salto
+	float _jump_power = 25.0f; // potencia del salto
 
-	RenderItem* _render_item;
+	RenderItem* _render_item; 
 
 	bool _preparing_jump = false;
 	bool _onPlatform = false;

@@ -100,6 +100,8 @@ bool Particle::integrate(double t)
 Particle* Particle::clone() const
 {
 	auto a = new Particle(myPType, radius, pose.p, vel, acceleration, damping);
+	a->setMass(mass);
+	a->setABF(affectedByForces);
 	return a;
 	
 }

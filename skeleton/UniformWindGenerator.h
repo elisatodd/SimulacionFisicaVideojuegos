@@ -10,6 +10,7 @@ public:
 	UniformWindGenerator(float k1, float k2, Vector3 wind, Vector3 ori, double w, double h, double d);
 
 	virtual void updateForce(Particle* p, double t);
+	virtual void updateForceRB(physx::PxRigidDynamic* rb, double t);
 
 protected:
 	Vector3 _wind;

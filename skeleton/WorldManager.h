@@ -9,6 +9,7 @@
 #include "TorqueGenerator.h"
 #include "ExplosionGenerator.h"
 #include "BuoyancyForceGenerator.h"
+#include "UniformWindGenerator.h"
 #include "RenderUtils.hpp"
 
 class UniformRigidBodyGenerator;
@@ -41,7 +42,8 @@ public:
 	void update(double t);
 
 	inline void changeTorque() { _torque->changeState(); };
-	inline void changeExplosion() { _explosion->changeState(); _explosion_active = true; };
+	inline void changeExplosion() { _explosion->changeState(); _explosion_active = !_explosion_active; _exp_timer = clock() + _exp_duration; };
+	inline bool getExplosionActive() { return _explosion_active; }
 
 	RigidBody* clone(RigidBody* rs) {
 		RigidBody* newRS = new RigidBody();
@@ -54,7 +56,7 @@ public:
 		newRS->actor = new_solid;
 		auto geo = rs->item->shape->getGeometryType();
 
-		Vector3 size = { 2.0, 2.0, 2.0 };
+		Vector3 size = { 0.25, 0.25, 0.25 };
 		new_solid->setMassSpaceInertiaTensor({ size.y * size.z, size.x * size.z, size.x * size.y });
 		
 		PxShape* shape;
@@ -109,13 +111,16 @@ protected:
 	// Generadores de Fuerzas
 	RigidBodyForceRegistry* _fr;
 	TorqueGenerator* _torque;
-	ExplosionGenerator* _explosion;
+	ExplosionGenerator *_explosion;
+	UniformWindGenerator* _wind;
+	float _exp_timer = 0.0;
+	float _exp_duration = 1000.0;
 	BuoyancyForceGenerator* _buoyancy;
 	bool _explosion_active = false;
 
 	// Generadores de partículas
 	std::list<RigidBodyGenerator*> _rigidbodies_generators;
-	float _generation_frequency = 20.0; // 100.0 == 1 segundo
+	float _generation_frequency = 100.0; // 100.0 == 1 segundo
 	float _next_generation = 0.0;
 	float _current_time = 0.0;
 

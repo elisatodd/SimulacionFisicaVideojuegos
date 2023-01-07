@@ -44,7 +44,7 @@ bool fromCamera = false;
 string cameraGen;
 
 Player* _player;
-
+bool _win = false;
 // Initialize physics engine
 void initPhysics(bool interactive)
 {
@@ -105,7 +105,7 @@ void stepPhysics(bool interactive, double t)
 
 	auto cam = GetCamera();
 	auto playerTr = _player->getItem()->actor->getGlobalPose();
-	//cam->setEye({playerTr.p.x, playerTr.p.y, playerTr.p.z + 100});
+	cam->setEye({playerTr.p.x, playerTr.p.y, playerTr.p.z + 40});
 }
 
 // Function to clean data
@@ -170,7 +170,18 @@ void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
 		//	_player->setJumping(false);
 		//}
 		_player->setOnPlatform(true);
-	//	cout << "The player reached a platform!\n";
+		//	cout << "The player reached a platform!\n";
+	}
+	// si pisa el boton de la bomba, explota
+	else if (actor1->getName() == "BotonBomba" || actor2->getName() == "BotonBomba") {
+		//cout << "Toca el boton.\n";
+		if (!wM->getExplosionActive())
+			wM->changeExplosion();
+	}
+	// Si llega a la meta, salen fireworks
+	else if (!_win && (actor1->getName() == "Meta" || actor2->getName() == "Meta") && (actor1->getName() == "Player" || actor2->getName() == "Player")) {
+		pSys->shootFirework(3);
+		_win = true;
 	}
 
 

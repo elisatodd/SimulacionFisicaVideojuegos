@@ -13,6 +13,7 @@ public:
 	
 	virtual void updateForce(Particle* p, double t);
 
+
 protected:
 	float K; // constante proporcional a la fuerza del torbellino
 	Vector3 origin;

@@ -335,7 +335,7 @@ void ParticleSystem::testWind()
 
     _particles.push_back(p);
 
-    auto wfg = new UniformWindGenerator(0.1, 0.2, {-10.0, 1.0, -10.0}, {0.0, 10.0, 0.0}, 20, 20, 20);
+    auto wfg = new UniformWindGenerator(0.1, 0.2, {-10.0, 1.0, -10.0}, {0.0, 10.0, 0.0},50, 50, 50);
     pfr->addRegistry(wfg, p);
 }
 
@@ -597,7 +597,7 @@ void ParticleSystem::testFloat()
     box = new Particle(BoxT, 3.0, { 10.0, 40.0, 0.0 });
     box->setABF(true);
     box->setDamping(0.85);
-    box->setMass(2.0); // medio kg
+    box->setMass(2.0);
     box->setColor({ 0.0, 1.0, 1.0, 0.0 });
 
     _particles.push_back(water);

@@ -64,16 +64,19 @@ void ExplosionGenerator::updateForceRB(physx::PxRigidDynamic* rb, double t)
 
 	auto pos = rb->getGlobalPose().p;
 
-	// distancia de la explosion
-	double r = sqrt(pow((pos.x - _centre.x), 2) + pow((pos.y - _centre.y), 2) + pow((pos.z - _centre.z), 2));
+	//double r = sqrt(pow((pos.x - _centre.x), 2) + pow((pos.y - _centre.y), 2) + pow((pos.z - _centre.z), 2));
+	auto difX = pos.x - _centre.x;
+	auto difY = pos.y - _centre.y;
+	auto difZ = pos.z - _centre.z;
+	auto r = sqrt(pow(difX, 2) + pow(difY, 2) + pow(difZ, 2));
 	Vector3 forceDir = { 0, 0, 0 };
 
-	if (r < _R) {
+	if (r <= _R) {
 		double first = _K / pow(r, 2);
 		double power = -(t / _const);
 		double second = pow(e, power);
 
-		forceDir = first * Vector3(pos.x - _centre.x, pos.y - _centre.y, pos.z - _centre.z) * second;
+		forceDir = first * Vector3(difX, difY, difZ) * second;
 	}
 
 	Vector3 v = rb->getAngularVelocity() - forceDir;
@@ -85,5 +88,6 @@ void ExplosionGenerator::updateForceRB(physx::PxRigidDynamic* rb, double t)
 
 //	std::cout << "Explosion force: " << expForce.x << "\t" << expForce.y << "\t" << expForce.z << "\n";
 
+	expForce.z = 0.0; // para simular 2D
 	rb->addForce(expForce);
 }

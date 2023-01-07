@@ -108,9 +108,9 @@ private:
 
 	Vector4 ball_color = Vector4(1.0, 0.5, 0.5, 1.0);
 	float ball_velMagnitud = 0.0f;
-	float ball_damping = 1.0;
-	float ball_radius = 0.8f;
-	Vector3 ball_acceleration = Vector3(0.0, -10.0, 0.0);
+	float ball_damping = 0.85f;
+	float ball_radius = 0.25f;
+	Vector3 ball_acceleration = Vector3(0.0, 0.0, 0.0);
 
 	Vector4 smoke_color = Vector4(0.66, 0.66, 0.66, 1.0);
 	float smoke_velMagnitud = 20.0f;

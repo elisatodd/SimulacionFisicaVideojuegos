@@ -13,9 +13,9 @@ Player::Player(PxPhysics* gp, PxScene* s)
 
 	// Rígido sólido del jugador
 	PxRigidDynamic* new_solid;
-	float size = 5.0;
+	float size = 0.5; // radio esfera
 
-	new_solid = _gPhysics->createRigidDynamic(PxTransform({ 0, -10, 0 }));
+	new_solid = _gPhysics->createRigidDynamic(PxTransform({ 0, 0, 0 }));
 
 	new_solid->setLinearVelocity({ 0.0, 0.0,0.0 }); // velocidad inicial
 	new_solid->setAngularVelocity({ 0.0, 0.0, 0.0 }); // velocidad de giro
@@ -25,9 +25,9 @@ Player::Player(PxPhysics* gp, PxScene* s)
 	new_solid->attachShape(*shape);
 
 	new_solid->setMassSpaceInertiaTensor({ size * size * size, size * size * size, size * size *size}); // tensor de inercia, marca cómo gira el objeto al chocar
-	new_solid->setAngularDamping(0.2);
-	new_solid->setLinearDamping(0.2);
-	new_solid->setMass(1000);
+	new_solid->setAngularDamping(0.85); // sin rozamiento = 0
+	new_solid->setLinearDamping(0.85);
+	new_solid->setMass(2.0);
 	_render_item = new RenderItem(shape, new_solid, { 0.5, 1.0, 1.0, 1.0 });
 
 	new_solid->setName("Player");
@@ -38,13 +38,15 @@ Player::Player(PxPhysics* gp, PxScene* s)
 
 	// Partícula para generar cuando se calcule la trayectoria
 	Particle* p = new Proyectile(ProyectileTypes::Ball);
-	p->setMass(1.0);
+	p->setMass(2.0);
 	p->setABF(true);
-	p->setRemainingTime(1000.0); // se muestran durante 1 segundo
+	p->setDamping(0.45);
+	p->setRemainingTime(MAXINT);
+	p->setAcc({0.0, 0.0, 0.0});
+	p->setVel({0.0, 0.0, 0.0});
 	p->setPosition({ -100000.0,  -100000.0 , -100000.0 }); // ocultar la partícula base
 	//La posición y velocidad del generador deben ser dependientes de la posición del jugador --> se hace en cada update
 	_upg = new UniformParticleGenerator("PlayerGenerator", {0.0, 0.0, 0.0} , {0.0, 0.0, 0.0}, 1, 1, p, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0});
-
 
 	_gfg = new GravityForceGenerator({ 0.0, -9.8, 0.0 });
 	_pfr = new ParticleForceRegistry();
@@ -65,8 +67,10 @@ void Player::update(double t)
 			
 			for (auto p : _upg->generateParticles()) {
 				_particles.push_back(p);
+				p->setMass(2.0);
+				p->setABF(true);
+				p->setRemainingTime(3.0); // se muestran durante 1 segundo -> ignorar el tiempo de la distribución
 				_pfr->addRegistry(_gfg, p);
-				p->setRemainingTime(4.0); // se muestran durante 1 segundo -> ignorar el tiempo de la distribución
 			}
 			_next_generation += _generation_frequency;	
 		}
@@ -93,6 +97,9 @@ void Player::update(double t)
 		else
 			p++;
 	}
+
+	// respawn si se ha caído al agua
+
 }
 
 void Player::jump()
@@ -111,9 +118,9 @@ void Player::jump()
 			p++;
 		}
 
-		// restablece la potencia y la trauectoria
+		// restablece la potencia y la trayectoria
 		_orientation = { 0, 1, 0 };
-		_jump_power = 40.0f;
+		//_jump_power = 15.0f;
 
 		_jumping = true;
 	}

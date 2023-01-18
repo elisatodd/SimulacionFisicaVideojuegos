@@ -57,18 +57,22 @@ public:
 		auto geo = rs->item->shape->getGeometryType();
 
 		Vector3 size = { 0.25, 0.25, 0.25 };
-		new_solid->setMassSpaceInertiaTensor({ size.y * size.z, size.x * size.z, size.x * size.y });
 		
 		PxShape* shape;
 		switch (geo) {
 			case PxGeometryType::eBOX:
 			{
-				shape = CreateShape(PxBoxGeometry(size));
+				physx::PxBoxGeometry box;
+				rs->item->shape->getBoxGeometry(box);
+				shape = CreateShape(box);
 				break;
 			}
 			case PxGeometryType::eSPHERE:
 			{
-				shape = CreateShape(PxSphereGeometry(size.x));
+				PxSphereGeometry sphere;
+				rs->item->shape->getSphereGeometry(sphere);
+				shape = CreateShape(sphere);
+				new_solid->setMassSpaceInertiaTensor({ size.y * size.z, size.x * size.z, size.x * size.y });
 				break;
 			}
 				break;
@@ -97,6 +101,7 @@ public:
 	void deleteItem(RenderItem* i);
 	void deleteActor(PxRigidActor* ac);
 
+	void addNPC(int type);
 protected:
 	// lista de items de sólidos rígidos
 	std::list<RenderItem*> _items;

@@ -6,6 +6,7 @@
 class BuoyancyForceGenerator : public ForceGenerator {
 public:
 	BuoyancyForceGenerator(float h, float V, float d, Particle* lp);
+	BuoyancyForceGenerator(float d, Particle* lp);
 
 	void updateForce(Particle* p, double t);
 	virtual void updateForceRB(physx::PxRigidDynamic* rb, double t);

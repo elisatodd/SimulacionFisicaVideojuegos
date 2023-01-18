@@ -49,6 +49,10 @@ private:
 	float _next_generation = 0.0;
 	float _generation_frequency = 300.0; // 1000.0 == 1 segundo
 
+	float _respawn_time = 5000.0; // reaparece a los 5s. de caer
+	float _next_respawn = 0.0;
+	bool _death = false;
+
 	// El player emite partículas que muestran la trayectoria del salto
 	UniformParticleGenerator* _upg;
 	list<Particle*> _particles; // aquí se guardan las partículas que determinan la trayectoria

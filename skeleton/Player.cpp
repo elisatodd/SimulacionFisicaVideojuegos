@@ -58,6 +58,9 @@ Player::~Player()
 
 void Player::update(double t)
 {
+	PxRigidDynamic* player = (PxRigidDynamic*)_render_item->actor;
+
+
 	if (_preparing_jump ) {
 
 		if (_next_generation <= clock()) {
@@ -81,7 +84,6 @@ void Player::update(double t)
 			pa->integrate(t);
 		}
 	}else if (_onPlatform && !_jumping) {
-		PxRigidDynamic* player = (PxRigidDynamic*)_render_item->actor;
 		player->setLinearVelocity({ 0.0, 0.0, 0.0 });
 		player->setAngularVelocity({ 0.0, 0.0, 0.0 });
 		_onPlatform = false;
@@ -99,6 +101,15 @@ void Player::update(double t)
 	}
 
 	// respawn si se ha caído al agua
+	if (!_death && player->getGlobalPose().p.y <= -10) {
+		_death = true;
+		_next_respawn = clock() + _respawn_time;
+	}
+	else if (_death && _next_respawn < clock()) {
+		_death = false;
+		player->setGlobalPose({ 0, 0, 0 });
+		player->setLinearVelocity({0, 0, 0});
+	}
 
 }
 

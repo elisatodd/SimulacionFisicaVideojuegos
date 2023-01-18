@@ -21,8 +21,8 @@ WorldManager::WorldManager(PxPhysics* gp, PxScene* s, Player* p) : _gPhysics(gp)
 	_wind = new UniformWindGenerator(0.1, 0.2, { -50.0, 0.0, 0.0 }, { 10, 16, 0 }, 3.5, 1, 3);
 
 	Particle* water = new Particle(ParticleTypes::WaterT, 200.0, { 0, -10 , 0 });
-	_buoyancy = new BuoyancyForceGenerator(1.0, (4/3) * 3.14 * pow(0.5,3), 997, water); // altura de player, volumen de player, densidad del agua
-	// volumen = 4/3 * pi * radio^3
+	_buoyancy = new BuoyancyForceGenerator(1.0, (4/3) * 3.14 * pow(0.5,3), 997, water); // densidad del agua = 997kg/m^3
+	
 
 	PxRigidDynamic* pAc = (PxRigidDynamic*)_player->getItem()->actor;
 	_fr->addRegistry(_buoyancy, pAc);
@@ -125,6 +125,11 @@ void WorldManager::createBaseScene()
 	auto _item_meta = new RenderItem(shape, Meta, { 0.7, 0.4, 1.0, 1 });
 	_gScene->addActor(*Meta);
 	_items.push_back(_item_meta);
+
+	addNPC(1);
+	addNPC(2);
+	
+
 }
 
 void WorldManager::addRigidDynamic()
@@ -281,4 +286,95 @@ void WorldManager::deleteItem(RenderItem* i)
 void WorldManager::deleteActor(PxRigidActor* ac)
 {
 	_gScene->removeActor(*ac);
+}
+
+void WorldManager::addNPC(int type)
+{
+	// Objetos flotando en el agua
+	switch (type) {
+
+	case 1:
+	{// BASE
+		PxRigidDynamic* npc = _gPhysics->createRigidDynamic(PxTransform({ 0, -8, 0 }));
+		auto _npc_geo = PxBoxGeometry(0.6, 0.6, 0.6);
+		PxShape* shape_npc = CreateShape(_npc_geo);
+		npc->attachShape(*shape_npc);
+		npc->setName("NPC");
+		npc->setMass(10.0);
+		auto _item_npc = new RenderItem(shape_npc, npc, { 0.0, 1.0, 0.0, 1.0 });
+
+		_gScene->addActor(*npc);
+		_items.push_back(_item_npc);
+
+		_fr->addRegistry(_buoyancy, npc);
+
+		RigidBody* rs = new RigidBody();
+		rs->item = _item_npc;
+		rs->lifeSpan = MAXINT; // este actor debe estar siempre pues es la base de clonación
+		rs->deathTime = MAXINT;
+		rs->actualLife = clock();
+		rs->actor = npc;
+		rs->forces.push_back("Buoyancy");
+
+		_rigid_statics.push_back(rs);
+
+		auto gen = new UniformRigidBodyGenerator("NPCs", { 0.0, -9.0, 0.0 }, { 0.0, 0.0, 0.0 }, 1.0, 10, rs, { 0.0, 0.0, 0.0 }, { 100.0, 0.0, 100.0 }, this);
+
+		for (auto n : gen->generateRB()) {
+			n->lifeSpan = MAXINT;
+			n->deathTime = MAXINT;
+			_items.push_back(n->item);
+
+			PxRigidDynamic* actor = (PxRigidDynamic*)(n->item->actor);
+			actor->setMass(npc->getMass());
+
+			//cout << "Type " << type << ": " << actor->getMass() << "\n";
+		}
+
+		break;
+	}
+
+	case 2:
+	{
+
+		PxRigidDynamic* npc = _gPhysics->createRigidDynamic(PxTransform({ 1, -8, 1 }));
+		auto _npc_geo = PxBoxGeometry(1, 1, 1);
+		PxShape* shape_npc = CreateShape(_npc_geo);
+		npc->attachShape(*shape_npc);
+		npc->setName("NPC");
+		npc->setMass(400.0);
+		auto _item_npc = new RenderItem(shape_npc, npc, { 1.0, 0.0, 0.3, 1.0 });
+
+		_gScene->addActor(*npc);
+		_items.push_back(_item_npc);
+
+		_fr->addRegistry(_buoyancy, npc);
+
+		RigidBody* rs = new RigidBody();
+		rs->item = _item_npc;
+		rs->lifeSpan = MAXINT; // este actor debe estar siempre pues es la base de clonación
+		rs->deathTime = MAXINT;
+		rs->actualLife = clock();
+		rs->actor = npc;
+		rs->forces.push_back("Buoyancy");
+
+		_rigid_statics.push_back(rs);
+
+		auto gen = new UniformRigidBodyGenerator("NPCs", { 0.0, -9.0, 0.0 }, { 0.0, 0.0, 0.0 }, 1.0, 10, rs, { 0.0, 0.0, 0.0 }, { 110.0, 0.0, 110.0 }, this);
+
+		for (auto n : gen->generateRB()) {
+			n->lifeSpan = MAXINT;
+			n->deathTime = MAXINT;
+			_items.push_back(n->item);
+
+			PxRigidDynamic* actor = (PxRigidDynamic*)(n->item->actor);
+			actor->setMass(npc->getMass());
+
+			//cout << "Type " << type << ": " << actor->getMass() << "\n";
+		}
+		break;
+	}
+
+	}
+	
 }

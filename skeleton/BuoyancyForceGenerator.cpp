@@ -1,9 +1,16 @@
 #include "BuoyancyForceGenerator.h"
 #include <iostream>
 
+#define pi  3.1415926535
+
 BuoyancyForceGenerator::BuoyancyForceGenerator(float h, float V, float d, Particle* lp) : ForceGenerator()
 {
-	_height = h; _volume = V; _liquid_density = d; _liquid_particle = lp;
+	_height = h; _volume = V; _liquid_density = d; _liquid_particle = lp; _name = "Buoyancy";
+}
+
+BuoyancyForceGenerator::BuoyancyForceGenerator(float d, Particle* lp)
+{
+	_height = 0.0; _volume = 0.0; _liquid_density = d; _liquid_particle = lp; _name = "Buoyancy";
 }
 
 void BuoyancyForceGenerator::updateForce(Particle* p, double t)
@@ -40,6 +47,38 @@ void BuoyancyForceGenerator::updateForceRB(physx::PxRigidDynamic* rb, double t)
 
 	Vector3 F(0, 0, 0);
 	float immersed = 0.0;
+
+	// Miro la forma que hay asociada a este RB
+	physx::PxShape* s;
+	physx::PxU32 u = rb->getNbShapes();
+	rb->getShapes(&s, u);
+
+	// Miro su tamaño para calcular altura y densidad
+
+	auto type = s->getGeometryType();
+	switch (type) {
+	case physx::PxGeometryType::eBOX:
+	{
+		physx::PxBoxGeometry box;
+		s->getBoxGeometry(box);
+		_height = box.halfExtents.y * 2;
+		// volumen = l * w * h
+		_volume = (box.halfExtents.x * 2) * _height * (box.halfExtents.z * 2);
+
+		break;
+	}
+	case physx::PxGeometryType::eSPHERE:
+	{
+		physx::PxSphereGeometry sphere;
+		s->getSphereGeometry(sphere);
+		_height = sphere.radius * 2;
+		// volumen = 4/3 * pi * radio^3
+		_volume = (4 / 3) * pi * pow((_height / 2), 3);
+		break;
+	}
+		
+	}
+
 	if (h - h0 > _height * 0.5) {
 		//Fuera del agua
 		immersed = 0.0;

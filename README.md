@@ -1,8 +1,8 @@
-# SimulacionFisicaVideojuegos
-Repositorio de las prácticas de la asignatura de Simulación Física de Videojuegos
+Tu objetivo es llegar hasta la meta (plataforma superior) mediante saltos entre plataformas.
 
-En la carpeta skeleton estará vuestro código fuente
+Controles
 
-Necesitaréis además descomprimir el archivo que se indica a continuación en la raíz del repositorio:
-
-Carpetas bin y common https://ucomplutense-my.sharepoint.com/:u:/g/personal/davalejo_ucm_es/EZcsdyIoqTFOrF4hdfkVYk0BJZ9IycJ3QqXQFwaXVrlSKg?e=pfs6IO
+SPACE para ver la trayectoria de salto.
+SPACE de nuevo, para ejecutar el salto.
+Z para salir de la vista de trayectoria.
+Q y E para cambiar la trayectoria del salto.

@@ -125,6 +125,7 @@ protected:
 
 	// Generadores de partículas
 	std::list<RigidBodyGenerator*> _rigidbodies_generators;
+	std::list<RigidBodyGenerator*> _npcs;
 	float _generation_frequency = 100.0; // 100.0 == 1 segundo
 	float _next_generation = 0.0;
 	float _current_time = 0.0;

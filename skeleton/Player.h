@@ -42,6 +42,7 @@ private:
 	float _jump_power = 25.0f; // potencia del salto
 
 	RenderItem* _render_item; 
+	PxMaterial* _material;
 
 	bool _preparing_jump = false;
 	bool _onPlatform = false;
@@ -59,5 +60,7 @@ private:
 	GravityForceGenerator* _gfg; // para que en la trayectoria se vea el efecto que tendrá la gravedad sobre el jugador
 
 	ParticleForceRegistry* _pfr;
+
+	Particle* _p;
 };
 

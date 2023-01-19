@@ -93,10 +93,12 @@ void BuoyancyForceGenerator::updateForceRB(physx::PxRigidDynamic* rb, double t)
 
 	F.y = _liquid_density * _volume * immersed; // Cuanto mayor sea el volumen, más "rebota" el objeto en el agua
 
+	rb->addForce(F);
+
+
 	/*if (F.y != 0)
 		std::cout << "Buoyancy force: " << F.x << "\t" << F.y << "\t" << F.z << "\n";*/
 
-	rb->addForce(F);
 }
 
 BuoyancyForceGenerator::~BuoyancyForceGenerator()

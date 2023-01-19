@@ -23,6 +23,6 @@ protected:
 	float _gravity = 9.8;
 
 	Particle* _liquid_particle; // Para la representación
-	bool _delete_particle = false;
+	bool _delete_particle = true;
 };
 

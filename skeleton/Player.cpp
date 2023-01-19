@@ -20,8 +20,8 @@ Player::Player(PxPhysics* gp, PxScene* s)
 	new_solid->setLinearVelocity({ 0.0, 0.0,0.0 }); // velocidad inicial
 	new_solid->setAngularVelocity({ 0.0, 0.0, 0.0 }); // velocidad de giro
 
-	PxMaterial* mat = _gPhysics->createMaterial(1.0f, 1.0f, 0.0f);
-	auto shape = CreateShape(PxSphereGeometry(size), mat);
+	_material = _gPhysics->createMaterial(1.0f, 1.0f, 0.0f);
+	auto shape = CreateShape(PxSphereGeometry(size), _material);
 	new_solid->attachShape(*shape);
 
 	new_solid->setMassSpaceInertiaTensor({ size * size * size, size * size * size, size * size *size}); // tensor de inercia, marca cómo gira el objeto al chocar
@@ -37,16 +37,16 @@ Player::Player(PxPhysics* gp, PxScene* s)
 	_orientation = { 0, 1, 0 };
 
 	// Partícula para generar cuando se calcule la trayectoria
-	Particle* p = new Proyectile(ProyectileTypes::Ball);
-	p->setMass(2.0);
-	p->setABF(true);
-	p->setDamping(0.45);
-	p->setRemainingTime(MAXINT);
-	p->setAcc({0.0, 0.0, 0.0});
-	p->setVel({0.0, 0.0, 0.0});
-	p->setPosition({ -100000.0,  -100000.0 , -100000.0 }); // ocultar la partícula base
+	_p = new Proyectile(ProyectileTypes::Ball);
+	_p->setMass(2.0);
+	_p->setABF(true);
+	_p->setDamping(0.45);
+	_p->setRemainingTime(MAXINT);
+	_p->setAcc({0.0, 0.0, 0.0});
+	_p->setVel({0.0, 0.0, 0.0});
+	_p->setPosition({ 0,  -20.0 , 0 }); // ocultar la partícula base
 	//La posición y velocidad del generador deben ser dependientes de la posición del jugador --> se hace en cada update
-	_upg = new UniformParticleGenerator("PlayerGenerator", {0.0, 0.0, 0.0} , {0.0, 0.0, 0.0}, 1, 1, p, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0});
+	_upg = new UniformParticleGenerator("PlayerGenerator", {0.0, 0.0, 0.0} , {0.0, 0.0, 0.0}, 1, 1, _p, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0});
 
 	_gfg = new GravityForceGenerator({ 0.0, -9.8, 0.0 });
 	_pfr = new ParticleForceRegistry();
@@ -54,6 +54,22 @@ Player::Player(PxPhysics* gp, PxScene* s)
 
 Player::~Player()
 {
+	DeregisterRenderItem(_render_item);
+	// elimina las partículas
+	auto p = _particles.begin();
+	while (p != _particles.end()) {
+		_pfr->deleteParticleRegistry(*p);
+		delete* p;
+		p = _particles.erase(p);
+	}
+
+
+	delete _upg;
+	delete _gfg;
+	delete _pfr;
+
+	delete _render_item;
+
 }
 
 void Player::update(double t)
@@ -127,7 +143,7 @@ void Player::jump()
 		while (p != _particles.end()) {
 			(*p)->setAlive(false);
 			p++;
-		}
+		}	
 
 		// restablece la potencia y la trayectoria
 		_orientation = { 0, 1, 0 };

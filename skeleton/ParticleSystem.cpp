@@ -202,46 +202,51 @@ void ParticleSystem::generateFireworkSystem()
     physx::PxVec3 _gravity = { 0.0,  -10.0, 0.0 };
 
     shared_ptr<ParticleGenerator> g0(new GaussianParticleGenerator("FIREWORKS GAUSSIAN GENERATOR initial",
-        { -20, 0, -20 }, { 0.0, 60.0, 0.0 }, 1.0, 1,
+        { 0, 25, 0 }, { 0.0, 30.0, 0.0 }, 1.0, 1,
         nullptr, { 3.0, 2.0, 3.0 }, { 0.1, 0.1, 0.1 }, 1.0 ));
     
     addParticleGenerator(g0);
 
     auto pHumo = new Proyectile(ProyectileTypes::Smoke);
+    pHumo->setRemainingTime(1000);
 
     shared_ptr<ParticleGenerator> g1(new GaussianParticleGenerator("FIREWORKS GAUSSIAN GENERATOR", 
                                                                 { 0.0, 10.0, 0.0 }, { 20, 10, 20 }, 1.0, 1,
-                                                                pHumo, { 2.0, 1.0, 2.0 }, {1.0, 1.0, 1.0}, 0.5));
+                                                                pHumo, { 1.0, 1.0, 1.0 }, {1.0, 1.0, 1.0}, 0.5));
 
     addParticleGenerator(g1);
 
-    auto fBase = new Firework({ -10000.0, -10000.0, -10000.0 }, { 0.0, 0.0, 0.0 }, _gravity, 0.99, { g1 }, 0.5);
+    auto fBase = new Firework({ -10000.0, -10000.0, -10000.0 }, { 0.0, 0.0, 0.0 }, _gravity, 0.99, { g1 }, 0.05);
+    fBase->setRemainingTime(500);
     fBase->setColor({ 1.0, 1.0, 0.5, 1.0 });
     _firework_pool.push_back(fBase);
 
     shared_ptr<ParticleGenerator> g2(new GaussianParticleGenerator("FIREWORKS GAUSSIAN GENERATOR 1", 
                                                                 { 0.0, 20.0, 0.0 }, { 20, 10, 20 }, 1.0, 4,
-                                                                _firework_pool[0], {2.0, 1.0, 2.0}, {1.0, 1.0, 1.0}, 0.5));
+                                                                _firework_pool[0], {0.5, 0.1, 0.5}, {1.0, 1.0, 1.0}, 0.5));
     
     addParticleGenerator(g2);
 
-    auto p = new Firework({ -10000.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, _gravity, 0.99, { g2, g1 }, 1.0);
+    auto p = new Firework({ -10000.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, _gravity, 0.99, { g2, g1 }, 0.1);
+    p->setRemainingTime(500);
     p->setColor({ 1.0, 1.0, 0.0, 1.0 });
     _firework_pool.push_back(p);
 
     shared_ptr<ParticleGenerator> g3(new GaussianParticleGenerator("FIREWORKS GAUSSIAN GENERATOR 2", 
                                                                 { 0.0, 20.0, 0.0 }, { 20, 10, 20 }, 1.0, 6,
-                                                                _firework_pool[1], {2.0,1.0, 2.0}, {1.0, 1.0, 1.0}, 1.5));
+                                                                _firework_pool[1], { 0.5, 0.1, 0.5 }, {1.0, 1.0, 1.0}, 1.5));
     
-    auto p1 = new Firework({ -10000.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, _gravity, 0.99, { g3 }, 1.5);
+    auto p1 = new Firework({ -10000.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, _gravity, 0.99, { g3 }, 0.25);
+    p1->setRemainingTime(500);
     p1->setColor({ 1.0, 0.5, 0.0, 1.0 });
     _firework_pool.push_back(p1);
 
     shared_ptr<ParticleGenerator> g4(new GaussianParticleGenerator("FIREWORKS GAUSSIAN GENERATOR 3", 
                                                                 { 0.0, 30.0, 0.0 }, { 20, 10, 20 }, 1.0, 8,
-                                                                _firework_pool[2], {2.0, 1.0, 2.0}, {1.0, 1.0, 1.0}, 3.0));
+                                                                _firework_pool[2], { 0.5, 0.1, 0.5 }, {1.0, 1.0, 1.0}, 3.0));
     
-    auto p2 = new Firework({ -10000.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, _gravity, 0.99, { g4, g2 }, 2.0);
+    auto p2 = new Firework({ -10000.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }, _gravity, 0.99, { g4, g2 }, 0.5);
+    p2->setRemainingTime(500);
     p2->setColor({1.0, 0.0, 0.0, 1.0});
     _firework_pool.push_back(p2);
 }

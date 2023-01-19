@@ -20,6 +20,8 @@
 #include "WorldManager.h"
 #include "Player.h"
 
+#include <crtdbg.h>
+
 using namespace physx;
 
 PxDefaultAllocator		gAllocator;
@@ -40,10 +42,10 @@ ContactReportCallback gContactReportCallback;
 
 ParticleSystem* pSys;
 WorldManager* wM;
-bool fromCamera = false;
+Player* _player;
+
 string cameraGen;
 
-Player* _player;
 bool _win = false;
 // Initialize physics engine
 void initPhysics(bool interactive)
@@ -91,13 +93,6 @@ void stepPhysics(bool interactive, double t)
 	bool a = false;
 	a = gScene->fetchResults(true);
 
-	//if (fromCamera) {
-	//	ParticleGenerator* g = pSys->getParticleGenerator(cameraGen);
-	//	
-	//	g->setMeanPos(GetCamera()->getEye() + GetCamera()->getDir() * 10);
-	//	g->setMeanVel(GetCamera()->getDir()*10);
-	//}
-
 	pSys->update(t);
 
 	wM->update(t);
@@ -128,6 +123,8 @@ void cleanupPhysics(bool interactive)
 	delete pSys;
 	delete _player;
 	delete wM;
+
+	//_CrtDumpMemoryLeaks();
 }
 	
 // Function called when a key is pressed
@@ -192,6 +189,9 @@ void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
 
 int main(int, const char*const*)
 {
+
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 #ifndef OFFLINE_EXECUTION 
 	extern void renderLoop();
 	renderLoop();

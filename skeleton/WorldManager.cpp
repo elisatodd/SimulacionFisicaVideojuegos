@@ -32,10 +32,36 @@ WorldManager::WorldManager(PxPhysics* gp, PxScene* s, Player* p) : _gPhysics(gp)
 
 WorldManager::~WorldManager()
 {
+	_player = nullptr;
+
 	for (auto e : _items) {
 		DeregisterRenderItem(e);
 		delete e;
 	}
+
+	for (auto e : _platforms) {
+		DeregisterRenderItem(e);
+		delete e;
+	}
+
+	delete _fr;
+	delete _torque;
+	delete _explosion;
+	delete _wind;
+	delete _buoyancy;
+
+	for (auto p : _rigidbodies_generators) {
+		delete p;
+	}
+
+	for (auto p : _rigid_statics) {
+		delete p;
+	}
+
+	for (auto p : _npcs) {
+		delete p;
+	}
+
 }
 
 
@@ -58,7 +84,6 @@ void WorldManager::createBaseScene()
 	Plat->setName("Platform");
 	_gScene->addActor(*Plat);
 	_platforms.push_back(_item_pared);
-	_items.push_back(_item_pared);
 
 	PxRigidStatic* Plat2 = _gPhysics->createRigidStatic(PxTransform({ -10, 10 , 0 }));
 	PxShape* shape_plat2 = CreateShape(_plat_geo);
@@ -67,7 +92,6 @@ void WorldManager::createBaseScene()
 	Plat2->setName("Platform");
 	_gScene->addActor(*Plat2);
 	_platforms.push_back(_item_pared2);
-	_items.push_back(_item_pared2);
 
 	PxRigidStatic* BotonBomba = _gPhysics->createRigidStatic(PxTransform({ -10, 11 , 0 }));
 	auto _bot_geo = PxBoxGeometry(1, 1, 1);
@@ -77,7 +101,6 @@ void WorldManager::createBaseScene()
 	BotonBomba->setName("BotonBomba");
 	_gScene->addActor(*BotonBomba);
 	_platforms.push_back(_item_boton);
-	_items.push_back(_item_boton);
 
 	//PxRigidStatic* Water = _gPhysics->createRigidStatic(PxTransform({ 0, -50 , 0 }));
 	//auto _water_geo = PxBoxGeometry(200, 10, 200);
@@ -95,7 +118,6 @@ void WorldManager::createBaseScene()
 	Plat3->setName("Platform");
 	_gScene->addActor(*Plat3);
 	_platforms.push_back(_item_pared3);
-	_items.push_back(_item_pared3);
 
 	PxRigidStatic* Plat4 = _gPhysics->createRigidStatic(PxTransform({ -10, 20, 0 }));
 	PxShape* shape_plat4 = CreateShape(_plat_geo);
@@ -104,7 +126,6 @@ void WorldManager::createBaseScene()
 	Plat4->setName("Platform");
 	_gScene->addActor(*Plat4);
 	_platforms.push_back(_item_pared4);
-	_items.push_back(_item_pared4);
 
 	// Obstáculo: generador de pelotas
 	addRBGenerator();
@@ -263,7 +284,8 @@ void WorldManager::addRBGenerator()
 
 	_rigid_statics.push_back(rs);
 	
-	auto gen = new UniformRigidBodyGenerator("Obstacle", { -12.0, 23.0, 0.0 }, { 5.0, 0.0, 0.0 }, 1.0, 1, rs, { 1.0, 0.5, 0.0 }, { 0.0, 0.0, 0.0 }, this);
+	auto gen = new UniformRigidBodyGenerator("Obstacle", { -12.0, 23.0, 0.0 }, { 5.0, 0.0, 0.0 }, 1.0, 1, 
+													rs, { 1.0, 0.5, 0.0 }, { 0.0, 0.0, 0.0 }, this);
 	_rigidbodies_generators.push_back(gen);
 }
 
@@ -319,7 +341,7 @@ void WorldManager::addNPC(int type)
 		_rigid_statics.push_back(rs);
 
 		auto gen = new UniformRigidBodyGenerator("NPCs", { 0.0, -9.0, 0.0 }, { 0.0, 0.0, 0.0 }, 1.0, 10, rs, { 0.0, 0.0, 0.0 }, { 100.0, 0.0, 100.0 }, this);
-
+		_npcs.push_back(gen);
 		for (auto n : gen->generateRB()) {
 			n->lifeSpan = MAXINT;
 			n->deathTime = MAXINT;
@@ -361,6 +383,7 @@ void WorldManager::addNPC(int type)
 		_rigid_statics.push_back(rs);
 
 		auto gen = new UniformRigidBodyGenerator("NPCs", { 0.0, -9.0, 0.0 }, { 0.0, 0.0, 0.0 }, 1.0, 10, rs, { 0.0, 0.0, 0.0 }, { 110.0, 0.0, 110.0 }, this);
+		_npcs.push_back(gen);
 
 		for (auto n : gen->generateRB()) {
 			n->lifeSpan = MAXINT;
